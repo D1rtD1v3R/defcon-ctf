@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLOPPY_DISK_001.exe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+  :root {
+    --green: #00ff41;
+    --darkgreen: #00aa2a;
+    --bg: #0a0a0a;
+    --dim: #003310;
+    --amber: #ffb000;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,255,65,0.03) 2px,
+      rgba(0,255,65,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .container {
+    max-width: 640px;
+    width: 100%;
+    border: 1px solid var(--darkgreen);
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0,255,65,0.1), inset 0 0 30px rgba(0,0,0,0.5);
+  }
+
+  .container::before {
+    content: '[ CLASSIFIED TERMINAL v2.4 ]';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: var(--bg);
+    padding: 0 8px;
+    font-size: 11px;
+    color: var(--darkgreen);
+  }
+
+  .blink { animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .title {
+    font-family: 'VT323', monospace;
+    font-size: clamp(28px, 8vw, 52px);
+    text-shadow: 0 0 20px var(--green);
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+
+  .subtitle {
+    color: var(--darkgreen);
+    font-size: 12px;
+    margin-bottom: 30px;
+    letter-spacing: 3px;
+  }
+
+  .boot-log {
+    font-size: 13px;
+    line-height: 2;
+    margin-bottom: 24px;
+  }
+
+  .boot-log .line {
+    opacity: 0;
+    animation: fadein 0.1s forwards;
+  }
+
+  .ok { color: var(--green); }
+  .warn { color: var(--amber); }
+  .err { color: #ff4444; }
+
+  @keyframes fadein { to { opacity: 1; } }
+
+  .boot-log .line:nth-child(1)  { animation-delay: 0.2s; }
+  .boot-log .line:nth-child(2)  { animation-delay: 0.5s; }
+  .boot-log .line:nth-child(3)  { animation-delay: 0.9s; }
+  .boot-log .line:nth-child(4)  { animation-delay: 1.3s; }
+  .boot-log .line:nth-child(5)  { animation-delay: 1.7s; }
+  .boot-log .line:nth-child(6)  { animation-delay: 2.1s; }
+  .boot-log .line:nth-child(7)  { animation-delay: 2.5s; }
+  .boot-log .line:nth-child(8)  { animation-delay: 3.0s; }
+
+  .mission {
+    border-top: 1px solid var(--dim);
+    padding-top: 20px;
+    opacity: 0;
+    animation: fadein 0.5s forwards;
+    animation-delay: 3.5s;
+  }
+
+  .mission p {
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 16px;
+    color: #aaffaa;
+  }
+
+  .mission strong { color: var(--green); }
+
+  .hint-box {
+    background: var(--dim);
+    border: 1px solid var(--darkgreen);
+    padding: 16px;
+    margin-top: 20px;
+    font-size: 13px;
+  }
+
+  .hint-box .label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--darkgreen);
+    margin-bottom: 8px;
+  }
+
+  .url-demo {
+    color: var(--amber);
+    word-break: break-all;
+    font-size: 13px;
+  }
+
+  .prompt {
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--darkgreen);
+  }
+
+  .floppy-art {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--darkgreen);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="floppy-art">
+    ┌─────────────────┐<br>
+    │  ░░░░░░░░░░░░░  │<br>
+    │  ░ DEFCON CTF░  │<br>
+    │  ░░░░░░░░░░░░░  │<br>
+    │   ┌─────────┐   │<br>
+    │   │▓▓▓▓▓▓▓▓▓│   │<br>
+    │   └─────────┘   │<br>
+    └─────────────────┘
+  </div>
+
+  <div class="title">ACCESS GRANTED<span class="blink">_</span></div>
+  <div class="subtitle">// MYSTERIOUS FLOPPY DISK DETECTED //</div>
+
+  <div class="boot-log">
+    <div class="line"><span class="ok">[  OK  ]</span> Mounting suspicious floppy disk...</div>
+    <div class="line"><span class="ok">[  OK  ]</span> Ignoring all antivirus warnings...</div>
+    <div class="line"><span class="warn">[ WARN ]</span> 47 red flags detected. Proceeding anyway.</div>
+    <div class="line"><span class="ok">[  OK  ]</span> DEF CON survival instincts: loaded</div>
+    <div class="line"><span class="warn">[ WARN ]</span> Badge: <strong>NOOB</strong> status confirmed</div>
+    <div class="line"><span class="err">[ FAIL ]</span> Hacker cred: critically low</div>
+    <div class="line"><span class="ok">[  OK  ]</span> CTF challenge initialized</div>
+    <div class="line"><span class="ok">[  OK  ]</span> Good luck. You'll need it. 😈</div>
+  </div>
+
+  <div class="mission">
+    <p>
+      Welcome, <strong>new fish</strong>. You found one of 50 mysterious floppy disks
+      scattered across DEF CON. Either you're clever, or just lucky.<br><br>
+      Your mission: prove you're more than a <strong>noob</strong> and capture the flag.
+    </p>
+
+    <div class="hint-box">
+      <div class="label">// STEP 1 — HINT //</div>
+      <p style="margin-bottom:10px; font-size:13px; color:#aaffaa;">
+        Look at the URL in your browser. See that <span style="color:var(--amber)">?badge=noob</span> parameter?<br>
+        Only a noob would leave it like that.
+      </p>
+      <div class="url-demo">
+        https://[yoursite].github.io/<strong>?badge=noob</strong>
+      </div>
+    </div>
+
+    <div class="prompt">&gt; Change <span style="color:var(--amber)">noob</span> to <span style="color:var(--green)">h4x0r</span> and reload.<span class="blink">_</span></div>
+  </div>
+</div>
+
+<script>
+  // Easter egg: check for h4x0r badge param
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('badge') === 'h4x0r') {
+    window.location.href = '/stage2.html';
+  }
+</script>
+</body>
+</html>
