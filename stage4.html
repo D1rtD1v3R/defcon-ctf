@@ -27,8 +27,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 20px;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   body::before {
@@ -100,7 +102,9 @@
   .challenge-box {
     background: var(--dim);
     border: 1px solid var(--darkgreen);
-    padding: 20px;
+    padding: 40px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     margin-bottom: 20px;
   }
 
@@ -256,7 +260,7 @@
     const result = document.getElementById('result');
     // The hex decodes to: FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}
     if (input === 'FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}') {
-      window.location.href = 'https://d1rtd1v3r.github.io/defcon-ctf//win.html';
+      window.location.href = 'https://d1rtd1v3r.github.io/defcon-ctf/win.html';
     } else if (input.toLowerCase().startsWith('flag{')) {
       result.textContent = '> Close... but not quite. Check your decode.';
       result.className = 'result';
