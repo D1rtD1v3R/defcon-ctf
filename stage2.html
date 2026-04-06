@@ -27,8 +27,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 20px;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   body::before {
@@ -102,7 +104,9 @@
   .challenge-box {
     background: var(--dim);
     border: 1px solid var(--darkgreen);
-    padding: 20px;
+    padding: 40px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     margin-bottom: 20px;
   }
 
