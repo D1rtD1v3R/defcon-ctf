@@ -35,8 +35,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 20px;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   body::before {
@@ -144,13 +146,69 @@
   .screen .tag { color: var(--purple); }
   .screen .value { color: var(--amber); }
 
+  .dump-btn {
+    width: 100%;
+    background: var(--dim);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    padding: 14px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+    margin-bottom: 16px;
+  }
+
+  .dump-btn:hover, .dump-btn:active {
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  .terminal-dump {
+    display: none;
+    background: #020802;
+    border: 1px solid #1a3a1a;
+    padding: 14px;
+    font-size: 11px;
+    line-height: 1.9;
+    color: #3a6a3a;
+    max-height: 280px;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    word-break: break-all;
+    position: relative;
+  }
+
+  .terminal-dump::before {
+    content: 'memory_dump.raw';
+    position: absolute;
+    top: -9px;
+    left: 12px;
+    background: #020802;
+    padding: 0 6px;
+    font-size: 10px;
+    color: #2a5a2a;
+  }
+
+  .terminal-dump.visible { display: block; }
+
+  .terminal-dump .hot {
+    color: var(--amber);
+    font-weight: bold;
+    background: rgba(255,176,0,0.08);
+  }
+
   .tip {
     border: 1px solid #333;
     padding: 14px;
     font-size: 12px;
     color: #888;
     line-height: 1.7;
+    margin-top: 16px;
+    display: none;
   }
+  .tip.visible { display: block; }
   .tip span { color: var(--cyan); }
 
   .prompt {
@@ -176,36 +234,82 @@
   <div class="flavor">
     You decoded ROT13. Your hacker capacity is now at <strong>61%</strong>.<br>
     The NSA has not yet flagged your device. Probably.<br><br>
-    The floppy disk keeps giving. But this next clue is
-    <strong>hidden from plain sight</strong>. You'll need to dig into
-    the page itself.
+    The floppy disk keeps giving. The next clue is buried somewhere
+    in this page's <strong>raw memory</strong>. Run a dump and find it.
   </div>
 
   <div class="challenge-box">
-    <div class="label">// INTEL BRIEFING //</div>
-    <div class="screen">
-      <span class="tag">&lt;head&gt;</span><br>
-      &nbsp;&nbsp;<span class="highlight">&lt;meta</span> <span class="tag">charset</span>=<span class="value">"UTF-8"</span><span class="highlight">&gt;</span><br>
-      &nbsp;&nbsp;<span style="color:#333">&lt;meta name="viewport" ...&gt;</span><br>
-      &nbsp;&nbsp;<span style="color:#ff4; font-weight:bold">&lt;!-- something is hiding in here --&gt;</span><br>
-      &nbsp;&nbsp;<span style="color:#333">&lt;title&gt;...&lt;/title&gt;</span><br>
-      <span class="tag">&lt;/head&gt;</span>
-    </div>
-    <div style="font-size:13px; color:#aaffaa; line-height:1.7">
-      &gt; View the page source. Look in the <span style="color:var(--cyan)">&lt;head&gt;</span> section.<br>
-      &gt; Find the <span style="color:var(--amber)">meta</span> tag with something encoded.<br>
-      &gt; Decode it to get the next path.
-    </div>
+    <div class="label">// MEMORY FORENSICS TOOL v0.9b //</div>
+    <button class="dump-btn" onclick="runDump()">[ RUN PAGE MEMORY DUMP ]</button>
+    <div class="terminal-dump" id="dump"></div>
   </div>
 
-  <div class="tip">
-    <span>// HOWTO: VIEW SOURCE //</span><br>
-    Chrome/Firefox mobile: tap address bar → add <span>view-source:</span> before the URL<br>
-    Or: Share → "Find on page" won't help. You need the raw HTML.<br>
-    Desktop: <span>Ctrl+U</span> / <span>Cmd+U</span>
+  <div class="tip" id="tip">
+    <span>// ANALYST NOTE //</span><br>
+    Something in that dump isn't junk data.<br>
+    Look for a <span>meta</span> tag with an encoded <span>content</span> attribute.<br>
+    Base64 decode the value → that's your next path.<br>
+    Tool: <span>base64decode.org</span> or your browser console:<br>
+    <span>atob("paste_value_here")</span>
   </div>
 
-  <div class="prompt">&gt; The answer is hiding in the &lt;head&gt;.<span class="blink">_</span></div>
+  <div class="prompt" id="prompt" style="display:none">&gt; Decode the value. Navigate to the path.<span class="blink">_</span></div>
 </div>
+
+<script>
+  function runDump() {
+    const btn = document.querySelector('.dump-btn');
+    btn.textContent = '[ DUMPING... ]';
+    btn.disabled = true;
+
+    setTimeout(() => {
+      const dump = document.getElementById('dump');
+      dump.classList.add('visible');
+      document.getElementById('tip').classList.add('visible');
+      document.getElementById('prompt').style.display = 'block';
+      btn.textContent = '[ DUMP COMPLETE ]';
+
+      // Fake junk memory mixed with the real meta tag
+      const lines = [
+        '0x00000000: 3c21 444f 4354 5950 4520 html 3e0a',
+        '0x00000010: 3c68 746d 6c20 6c61 6e67 3d22 656e 223e',
+        '0x00000020: 0a3c 6865 6164 3e0a 3c6d 6574 6120 6368',
+        '0x00000030: 6172 7365 743d 2255 5446 2d38 223e 0a3c',
+        '0x00000040: 6d65 7461 206e 616d 653d 2276 6965 7770',
+        '0x00000050: 6f72 7422 2063 6f6e 7465 6e74 3d22 7769',
+        '0x00000060: 6474 683d 6465 7669 6365 2d77 6964 7468',
+        '0x00000070: 2c20 696e 6974 6961 6c2d 7363 616c 653d',
+        '0x00000080: 312e 3022 3e0a 3c6d 6574 6120 6e61 6d65',
+        '0x00000090: NULL SECTOR ... 00 00 00 ff ff ff 00 00',
+        '0x000000a0: HEAP FRAGMENT 3a20 6163 636f 756e 7420',
+        '0x000000b0: 6461 7461 2073 6563 7572 6974 7920 6c6f',
+        '0x000000c0: 636b 6564 2e20 7265 6d6f 7465 2061 6363',
+        '0x000000d0: 6573 7320 6465 6e69 6564 2e20 7265 7472',
+        '0x000000e0: 7969 6e67 2e2e 2e20 4552 524f 5220 3078',
+        '0x000000f0: 4641 494c 4544 2e20 4143 4345 5353 2044',
+        '0x00000100: STACK: ... ff ff 00 00 de ad be ef ca fe',
+        '0x00000110: 4842 4153 4520 5345 474d 454e 5420 4552',
+        '0x00000120: NULL ... 00 00 00 00 00 00 00 00 00 00',
+      ];
+
+      // Insert the real clue in the middle of the junk
+      const realClue = `<span class="hot">&lt;meta name="next-path" content="L3N0YWdlNC5odG1s"&gt;</span>`;
+      lines.splice(9, 0,
+        '0x00000091: -- DOM METADATA BLOCK --',
+        '0x00000092: ' + realClue,
+        '0x00000093: -- END METADATA BLOCK --',
+      );
+
+      dump.innerHTML = lines.join('<br>');
+
+      // Auto-scroll to the clue after a beat
+      setTimeout(() => {
+        const hot = dump.querySelector('.hot');
+        if (hot) hot.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 600);
+
+    }, 1800);
+  }
+</script>
 </body>
 </html>
