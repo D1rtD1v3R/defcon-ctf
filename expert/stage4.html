@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>...</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  :root{--green:#00ff41;--darkgreen:#00aa2a;--bg:#0a0a0a;--dim:#003310;--red:#ff4444;--amber:#ffb000;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--green);font-family:'Share Tech Mono',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:40px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px);pointer-events:none;z-index:10;}
+  .container{max-width:640px;width:100%;border:1px solid var(--red);padding:30px;position:relative;box-shadow:0 0 30px rgba(255,68,68,0.1);}
+  .container::before{content:'[ EXPERT ]';position:absolute;top:-10px;left:20px;background:var(--bg);padding:0 8px;font-size:11px;color:var(--red);}
+  .blink{animation:blink 1s step-end infinite;} @keyframes blink{50%{opacity:0;}}
+  .title{font-family:'VT323',monospace;font-size:clamp(28px,8vw,52px);color:var(--red);text-shadow:0 0 20px var(--red);margin-bottom:8px;}
+  .body{font-size:13px;color:#aaffaa;line-height:2;margin-bottom:24px;}
+  .black-box{background:#000;border:1px solid #111;padding:40px 20px;text-align:center;margin-bottom:20px;}
+  .black-box p{font-size:11px;color:#1a1a1a;}
+  .prompt{font-size:13px;color:#333;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">ALMOST<span class="blink">_</span></div>
+  <div class="body">
+    Three fragments down. One remains.<br><br>
+    This page knows the last piece.<br>
+    It won't show you.<br>
+    You'll have to <strong style="color:var(--red)">make it talk.</strong>
+  </div>
+  <div class="black-box">
+    <p>nothing to see here</p>
+  </div>
+  <div class="prompt">&gt; <span class="blink">_</span></div>
+</div>
+<script>
+  (function() {
+    var _0x1a = ['\x46\x4c\x41\x47\x5f\x50\x41\x52\x54\x5f\x33\x3a\x5f\x30\x66\x5f\x64\x33\x66\x63\x30\x6e\x5f\x32\x30\x32\x36'];
+    var msg = atob('WW91IGZvdW5kIGl0LiBGcmFnbWVudCAzOg==');
+    console.log('%c' + msg, 'color: #ff4444; font-family: monospace; font-size: 14px;');
+    console.log('%c' + _0x1a[0], 'color: #00ff41; font-family: monospace; font-size: 18px; font-weight: bold;');
+    console.log('%cNow assemble all 3 fragments and navigate to /expert/stage5.html', 'color: #ffb000; font-family: monospace; font-size: 12px;');
+  })();
+</script>
+</body>
+</html>

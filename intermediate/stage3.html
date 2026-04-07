@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INTERMEDIATE :: STAGE 3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  :root { --green:#00ff41; --darkgreen:#00aa2a; --bg:#0a0a0a; --dim:#003310; --amber:#ffb000; --cyan:#00ffff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--green); font-family:'Share Tech Mono',monospace; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:40px 20px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px); pointer-events:none; z-index:10; }
+  .container { max-width:640px; width:100%; border:1px solid var(--darkgreen); padding:30px; position:relative; box-shadow:0 0 30px rgba(0,255,65,0.1); }
+  .container::before { content:'[ INTERMEDIATE :: STAGE 3 OF 4 ]'; position:absolute; top:-10px; left:20px; background:var(--bg); padding:0 8px; font-size:11px; color:var(--amber); }
+  .blink { animation:blink 1s step-end infinite; } @keyframes blink { 50%{opacity:0;} }
+  .title { font-family:'VT323',monospace; font-size:clamp(28px,8vw,48px); text-shadow:0 0 20px var(--amber); color:var(--amber); margin-bottom:8px; }
+  .subtitle { color:#856a00; font-size:11px; letter-spacing:3px; margin-bottom:24px; }
+  .level-indicator { display:flex; gap:8px; margin-bottom:20px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--dim); border:1px solid var(--darkgreen); }
+  .dot.done { background:var(--green); box-shadow:0 0 6px var(--green); }
+  .dot.active { background:var(--amber); box-shadow:0 0 6px var(--amber); }
+  .flavor { font-size:14px; color:#aaffaa; line-height:1.8; margin-bottom:24px; }
+  .challenge-box { background:var(--dim); border:1px solid var(--darkgreen); padding:20px; margin-bottom:20px; }
+  .challenge-box .label { font-size:10px; letter-spacing:3px; color:var(--darkgreen); margin-bottom:14px; }
+  .encoded { font-family:'VT323',monospace; font-size:16px; color:var(--amber); word-break:break-all; line-height:1.8; letter-spacing:1px; }
+  .context { font-size:12px; color:#888; line-height:1.7; margin-top:12px; }
+  .context span { color:var(--cyan); }
+  .prompt { margin-top:20px; font-size:13px; color:var(--darkgreen); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="level-indicator">
+    <div class="dot done"></div><div class="dot done"></div><div class="dot active"></div><div class="dot"></div>
+  </div>
+  <div class="title">XOR SOLVED<span class="blink">_</span></div>
+  <div class="subtitle">// DOUBLE ENCODED TRANSMISSION //</div>
+  <div class="flavor">
+    The key was hiding in plain sight the whole time.<br><br>
+    This one is wrapped twice. Two operations.
+    One was Caesar's favourite. The other is what
+    the internet uses to move binary data around.
+    <strong>Order matters.</strong>
+  </div>
+  <div class="challenge-box">
+    <div class="label">// DOUBLE ENCODED URL //</div>
+    <div class="encoded">nUE0pUZ6Yl9xZKW0MQS2Z3VhM2y0nUIvYzyiY2EyMzAiov1wqTLinJ50MKWgMJEcLKEyY3A0LJqyAP5bqT1f</div>
+    <div class="context">
+      &gt; Two encoding layers<br>
+      &gt; Undo them in the right order<br>
+      &gt; Result is a full URL — navigate to it
+    </div>
+  </div>
+  <div class="prompt">&gt; Unwrap. Navigate.<span class="blink">_</span></div>
+</div>
+</body>
+</html>

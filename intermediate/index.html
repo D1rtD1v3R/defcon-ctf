@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INTERMEDIATE :: STAGE 1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  :root { --green:#00ff41; --darkgreen:#00aa2a; --bg:#0a0a0a; --dim:#003310; --amber:#ffb000; --cyan:#00ffff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--green); font-family:'Share Tech Mono',monospace; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:40px 20px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px); pointer-events:none; z-index:10; }
+  .container { max-width:640px; width:100%; border:1px solid var(--darkgreen); padding:30px; position:relative; box-shadow:0 0 30px rgba(0,255,65,0.1); }
+  .container::before { content:'[ INTERMEDIATE :: STAGE 1 OF 4 ]'; position:absolute; top:-10px; left:20px; background:var(--bg); padding:0 8px; font-size:11px; color:var(--amber); }
+  .blink { animation:blink 1s step-end infinite; } @keyframes blink { 50%{opacity:0;} }
+  .title { font-family:'VT323',monospace; font-size:clamp(28px,8vw,48px); text-shadow:0 0 20px var(--amber); color:var(--amber); margin-bottom:8px; }
+  .subtitle { color:#856a00; font-size:11px; letter-spacing:3px; margin-bottom:24px; }
+  .level-indicator { display:flex; gap:8px; margin-bottom:20px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--dim); border:1px solid var(--darkgreen); }
+  .dot.active { background:var(--amber); box-shadow:0 0 6px var(--amber); }
+  .flavor { font-size:14px; color:#aaffaa; line-height:1.8; margin-bottom:24px; }
+  .challenge-box { background:var(--dim); border:1px solid var(--darkgreen); padding:20px; margin-bottom:20px; }
+  .challenge-box .label { font-size:10px; letter-spacing:3px; color:var(--darkgreen); margin-bottom:14px; }
+  .encoded { font-family:'VT323',monospace; font-size:18px; color:var(--amber); word-break:break-all; line-height:1.8; letter-spacing:1px; }
+  .tip { border:1px solid #333; padding:14px; font-size:12px; color:#888; line-height:1.7; margin-top:16px; }
+  .tip span { color:var(--cyan); }
+  .prompt { margin-top:20px; font-size:13px; color:var(--darkgreen); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="level-indicator">
+    <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+  <div class="title">NO HINTS.<span class="blink">_</span></div>
+  <div class="subtitle">// INTERMEDIATE PATH :: BINARY TRANSMISSION //</div>
+  <div class="flavor">
+    You chose intermediate. Clippy has been <strong>terminated</strong>.<br><br>
+    A transmission was intercepted. It's not encrypted — it's just
+    encoded in the language computers actually speak.
+  </div>
+  <div class="challenge-box">
+    <div class="label">// INTERCEPTED SIGNAL //</div>
+    <div class="encoded">
+      01101000 01110100 01110100 01110000<br>
+      01110011 00111010 00101111 00101111<br>
+      01100100 00110001 01110010 01110100<br>
+      01100100 00110001 01110110 00110011<br>
+      01110010 00101110 01100111 01101001<br>
+      01110100 01101000 01110101 01100010<br>
+      00101110 01101001 01101111 00101111<br>
+      01100100 01100101 01100110 01100011<br>
+      01101111 01101110 00101101 01100011<br>
+      01110100 01100110 00101111 01101001<br>
+      01101110 01110100 01100101 01110010<br>
+      01101101 01100101 01100100 01101001<br>
+      01100001 01110100 01100101 00101111<br>
+      01110011 01110100 01100001 01100111<br>
+      01100101 00110010 00101110 01101000<br>
+      01110100 01101101 01101100
+    </div>
+  </div>
+  <div class="tip">
+    <span>// NO HINTS ON THIS PATH //</span><br>
+    You know what binary is. You know what to do.
+  </div>
+  <div class="prompt">&gt; Decode. Navigate.<span class="blink">_</span></div>
+</div>
+</body>
+</html>

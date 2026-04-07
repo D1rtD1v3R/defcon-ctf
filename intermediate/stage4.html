@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INTERMEDIATE :: STAGE 4</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  :root { --green:#00ff41; --darkgreen:#00aa2a; --bg:#0a0a0a; --dim:#003310; --amber:#ffb000; --cyan:#00ffff; --red:#ff4444; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--green); font-family:'Share Tech Mono',monospace; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:40px 20px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px); pointer-events:none; z-index:10; }
+  .container { max-width:640px; width:100%; border:1px solid var(--darkgreen); padding:30px; position:relative; box-shadow:0 0 30px rgba(0,255,65,0.1); }
+  .container::before { content:'[ INTERMEDIATE :: FINAL STAGE ]'; position:absolute; top:-10px; left:20px; background:var(--bg); padding:0 8px; font-size:11px; color:var(--red); }
+  .blink { animation:blink 1s step-end infinite; } @keyframes blink { 50%{opacity:0;} }
+  .title { font-family:'VT323',monospace; font-size:clamp(28px,8vw,48px); text-shadow:0 0 20px var(--amber); color:var(--amber); margin-bottom:8px; }
+  .subtitle { color:#856a00; font-size:11px; letter-spacing:3px; margin-bottom:24px; }
+  .level-indicator { display:flex; gap:8px; margin-bottom:20px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--dim); border:1px solid var(--darkgreen); }
+  .dot.done { background:var(--green); box-shadow:0 0 6px var(--green); }
+  .dot.active { background:var(--red); box-shadow:0 0 6px var(--red); animation:pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50%{box-shadow:0 0 14px var(--red);} }
+  .flavor { font-size:14px; color:#aaffaa; line-height:1.8; margin-bottom:24px; }
+  .challenge-box { background:var(--dim); border:1px solid var(--darkgreen); padding:20px; margin-bottom:20px; }
+  .challenge-box .label { font-size:10px; letter-spacing:3px; color:var(--darkgreen); margin-bottom:14px; }
+  .encoded { font-family:'VT323',monospace; font-size:18px; color:var(--amber); word-break:break-all; line-height:1.8; }
+  .context { font-size:12px; color:#888; line-height:1.7; margin-top:12px; }
+  .context span { color:var(--cyan); }
+  .input-area { margin-top:20px; }
+  .input-area label { display:block; font-size:11px; letter-spacing:2px; color:var(--darkgreen); margin-bottom:8px; }
+  .input-row { display:flex; gap:8px; }
+  input[type="text"] { flex:1; background:#050505; border:1px solid var(--darkgreen); color:var(--green); font-family:'Share Tech Mono',monospace; font-size:14px; padding:10px 14px; outline:none; }
+  input[type="text"]:focus { border-color:var(--green); box-shadow:0 0 8px rgba(0,255,65,0.2); }
+  button { background:var(--dim); border:1px solid var(--green); color:var(--green); font-family:'Share Tech Mono',monospace; font-size:13px; padding:10px 16px; cursor:pointer; transition:all 0.2s; }
+  button:hover { background:var(--green); color:var(--bg); }
+  .result { margin-top:12px; font-size:13px; min-height:20px; color:var(--red); }
+  .result.success { color:var(--green); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="level-indicator">
+    <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div>
+  </div>
+  <div class="title">FINAL LOCK<span class="blink">_</span></div>
+  <div class="subtitle">// HEX → BASE64 → FLAG //</div>
+  <div class="flavor">
+    Last one. Two layers again — but this time
+    the output isn't a path. It's the flag.<br><br>
+    Hex first. Then Base64. Then you're done.
+  </div>
+  <div class="challenge-box">
+    <div class="label">// DOUBLE ENCODED FLAG //</div>
+    <!-- FLAG{y0u_kn0w_y0ur_w4y_4r0und} -> base64 -> hex -->
+    <div class="encoded">
+      52 6b 78 42 52 33 74 35 4d 48 56 66 61 32 34 77<br>
+      64 31 39 35 4d 48 56 79 58 33 63 30 65 56 38 30<br>
+      63 6a 42 31 62 6d 52 39
+    </div>
+    <div class="context">
+      &gt; Step 1: decode hex → gives you a Base64 string<br>
+      &gt; Step 2: decode Base64 → gives you the flag<br>
+      &gt; Enter <span>FLAG{...}</span> below
+    </div>
+  </div>
+  <div class="input-area">
+    <label>// ENTER FLAG //</label>
+    <div class="input-row">
+      <input type="text" id="flagInput" placeholder="FLAG{...}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button onclick="checkFlag()">SUBMIT</button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+</div>
+<script>
+  function checkFlag() {
+    const input = document.getElementById('flagInput').value.trim();
+    const result = document.getElementById('result');
+    if (input === 'FLAG{y0u_kn0w_y0ur_w4y_4r0und}') {
+      window.location.href = 'https://d1rtd1v3r.github.io/defcon-ctf/intermediate/win.html';
+    } else if (input.toLowerCase().startsWith('flag{')) {
+      result.textContent = '> Decoded correctly? Check your steps.';
+      result.className = 'result';
+    } else {
+      result.textContent = '> That is not a flag.';
+      result.className = 'result';
+    }
+  }
+  document.getElementById('flagInput').addEventListener('keydown', e => { if(e.key==='Enter') checkFlag(); });
+</script>
+</body>
+</html>

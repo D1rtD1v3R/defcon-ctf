@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLOPPY_DISK_001 :: FINAL STAGE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+  :root {
+    --green: #00ff41;
+    --darkgreen: #00aa2a;
+    --bg: #0a0a0a;
+    --dim: #003310;
+    --amber: #ffb000;
+    --cyan: #00ffff;
+    --red: #ff4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,255,65,0.03) 2px, rgba(0,255,65,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .container {
+    max-width: 640px;
+    width: 100%;
+    border: 1px solid var(--darkgreen);
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0,255,65,0.1);
+  }
+
+  .container::before {
+    content: '[ FINAL STAGE :: LAST LOCK ]';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: var(--bg);
+    padding: 0 8px;
+    font-size: 11px;
+    color: var(--red);
+  }
+
+  .blink { animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .title {
+    font-family: 'VT323', monospace;
+    font-size: clamp(28px, 8vw, 48px);
+    text-shadow: 0 0 20px var(--green);
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    color: var(--darkgreen);
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 24px;
+  }
+
+  .level-indicator {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); border: 1px solid var(--darkgreen); }
+  .dot.done { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot.active { background: var(--red); box-shadow: 0 0 6px var(--red); animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 14px var(--red); } }
+
+  .flavor {
+    font-size: 14px;
+    color: #aaffaa;
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+
+  .challenge-box {
+    background: var(--dim);
+    border: 1px solid var(--darkgreen);
+    padding: 40px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px;
+  }
+
+  .challenge-box .label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--darkgreen);
+    margin-bottom: 14px;
+  }
+
+  .hex-string {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--amber);
+    text-shadow: 0 0 10px rgba(255,176,0,0.4);
+    word-break: break-all;
+    line-height: 1.6;
+    letter-spacing: 2px;
+  }
+
+  .input-area {
+    margin-top: 20px;
+  }
+
+  .input-area label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--darkgreen);
+    margin-bottom: 8px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    background: #050505;
+    border: 1px solid var(--darkgreen);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 8px rgba(0,255,65,0.2);
+  }
+
+  button {
+    background: var(--dim);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    padding: 10px 16px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  button:hover {
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  .result {
+    margin-top: 12px;
+    font-size: 13px;
+    min-height: 20px;
+    color: var(--red);
+  }
+
+  .result.success { color: var(--green); }
+
+  .tip {
+    border: 1px solid #333;
+    padding: 14px;
+    font-size: 12px;
+    color: #888;
+    line-height: 1.7;
+    margin-top: 16px;
+  }
+  .tip span { color: var(--cyan); }
+
+  .prompt {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--darkgreen);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="level-indicator">
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+  </div>
+
+  <div class="title">FINAL LOCK<span class="blink">_</span></div>
+  <div class="subtitle">// BASE64 DECODED :: ONE CHALLENGE REMAINS //</div>
+
+  <div class="flavor">
+    Impressive. You read the source. You decoded Base64.<br>
+    Hacker capacity now at <strong>88%</strong>. So close.<br><br>
+    One last cipher stands between you and the flag.
+    This is the <strong>final lock</strong> on the floppy disk.
+  </div>
+
+  <div class="challenge-box">
+    <div class="label">// ENCRYPTED FLAG FRAGMENT //</div>
+    <div class="hex-string">
+      46 4c 41 47 7b 66 6c 30 70 70 79<br>
+      5f 64 31 73 6b 73 5f 34 72 33 5f<br>
+      62 34 63 6b 5f 62 34 62 79 7d
+    </div>
+
+    <div style="margin-top:14px; font-size:12px; color:var(--darkgreen); line-height:1.7">
+      &gt; Format: hex bytes separated by spaces<br>
+      &gt; Each pair = one ASCII character<br>
+      &gt; Decode to reveal the flag
+    </div>
+  </div>
+
+  <div class="input-area">
+    <label>// ENTER DECODED FLAG //</label>
+    <div class="input-row">
+      <input type="text" id="flagInput" placeholder="FLAG{...}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button onclick="checkFlag()">SUBMIT</button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <div class="tip">
+    <span>// TOOLS //</span><br>
+    CyberChef: <span>gchq.github.io/CyberChef</span> → "From Hex"<br>
+    Or manually: 46=F, 4c=L, 41=A, 47=G...
+  </div>
+
+  <div class="prompt">&gt; Decode the hex. Enter the flag.<span class="blink">_</span></div>
+</div>
+
+<script>
+  function checkFlag() {
+    const input = document.getElementById('flagInput').value.trim();
+    const result = document.getElementById('result');
+    // The hex decodes to: FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}
+    if (input === 'FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}') {
+      window.location.href = 'https://d1rtd1v3r.github.io/defcon-ctf/beginner/win.html';
+    } else if (input.toLowerCase().startsWith('flag{')) {
+      result.textContent = '> Close... but not quite. Check your decode.';
+      result.className = 'result';
+    } else {
+      result.textContent = '> ACCESS DENIED. Try again, noob. (jk you got this)';
+      result.className = 'result';
+    }
+  }
+
+  document.getElementById('flagInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') checkFlag();
+  });
+</script>
+
+<!-- CLIPPY HINT SYSTEM -->
+<div id="clippy-container" style="position:fixed;bottom:20px;right:16px;z-index:1000;display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+
+  <!-- Speech bubble -->
+  <div id="clippy-bubble" style="display:none;background:#fffde7;border:1.5px solid #c8a84b;border-radius:8px;padding:14px;max-width:240px;min-width:180px;position:relative;font-family:'Share Tech Mono',monospace;font-size:12px;color:#222;line-height:1.6;">
+    <!-- bubble tail -->
+    <div style="position:absolute;bottom:-10px;right:28px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:10px solid #c8a84b;"></div>
+    <div style="position:absolute;bottom:-8px;right:29px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid #fffde7;"></div>
+    <div id="clippy-text"></div>
+    <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end;">
+      <button id="clippy-next-btn" onclick="clippyNext()" style="background:#c8a84b;border:none;color:#fff;font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;border-radius:3px;display:none;">more...</button>
+      <button onclick="clippyClose()" style="background:transparent;border:1px solid #c8a84b;color:#888;font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;border-radius:3px;">dismiss</button>
+    </div>
+  </div>
+
+  <!-- Clippy character + hint button -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+    <div id="clippy-char" style="cursor:pointer;transition:transform 0.15s;" onclick="clippyToggle()" title="It looks like you need a hint!">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 80" width="60" height="80">
+  <!-- body - paperclip shape -->
+  <path d="M20 70 C10 70 6 62 6 54 L6 24 C6 14 12 8 20 8 C28 8 34 14 34 24 L34 52 C34 57 31 60 27 60 C23 60 20 57 20 52 L20 26" fill="none" stroke="#888" stroke-width="5" stroke-linecap="round"/>
+  <!-- eyes -->
+  <ellipse cx="24" cy="18" rx="3" ry="3.5" fill="white" stroke="#333" stroke-width="0.8"/>
+  <ellipse cx="36" cy="18" rx="3" ry="3.5" fill="white" stroke="#333" stroke-width="0.8"/>
+  <circle cx="25" cy="19" r="1.5" fill="#222"/>
+  <circle cx="37" cy="19" r="1.5" fill="#222"/>
+  <circle cx="25.8" cy="18.2" r="0.6" fill="white"/>
+  <circle cx="37.8" cy="18.2" r="0.6" fill="white"/>
+  <!-- eyebrows -->
+  <path d="M21 14 Q24 12 27 14" fill="none" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M33 14 Q36 12 39 14" fill="none" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- mouth -->
+  <path class="clippy-mouth" d="M25 24 Q30 27 35 24" fill="none" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- arms -->
+  <path d="M34 30 Q44 26 46 32" fill="none" stroke="#888" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M34 38 Q46 38 47 44" fill="none" stroke="#888" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- hands -->
+  <circle cx="46" cy="33" r="2.5" fill="#888"/>
+  <circle cx="47" cy="45" r="2.5" fill="#888"/>
+</svg>
+    </div>
+    <button onclick="clippyToggle()" style="background:#fffde7;border:1.5px solid #c8a84b;color:#856a00;font-family:'Share Tech Mono',monospace;font-size:10px;padding:3px 8px;cursor:pointer;border-radius:3px;letter-spacing:1px;">HINT?</button>
+  </div>
+
+</div>
+
+<script>
+  var clippyHints = ["It looks like you're trying to <b>decode some hex</b>!<br><br>Each pair of digits represents one ASCII character. <code>46</code> = F, <code>4c</code> = L, <code>41</code> = A...","Head to <b>gchq.github.io/CyberChef</b> and use the <code>From Hex</code> operation.<br><br>Paste in the hex string and it'll decode to your flag!"];
+  var clippyStep = 0;
+  var clippyOpen = false;
+
+  function clippyToggle() {
+    if (clippyOpen) { clippyClose(); return; }
+    clippyStep = 0;
+    clippyOpen = true;
+    showClippyStep();
+    document.getElementById('clippy-bubble').style.display = 'block';
+    document.getElementById('clippy-char').style.transform = 'scale(1.1)';
+  }
+
+  function showClippyStep() {
+    document.getElementById('clippy-text').innerHTML = clippyHints[clippyStep];
+    var btn = document.getElementById('clippy-next-btn');
+    btn.style.display = clippyStep < clippyHints.length - 1 ? 'inline-block' : 'none';
+  }
+
+  function clippyNext() {
+    if (clippyStep < clippyHints.length - 1) {
+      clippyStep++;
+      showClippyStep();
+    }
+  }
+
+  function clippyClose() {
+    clippyOpen = false;
+    document.getElementById('clippy-bubble').style.display = 'none';
+    document.getElementById('clippy-char').style.transform = 'scale(1)';
+  }
+</script>
+
+</body>
+</html>

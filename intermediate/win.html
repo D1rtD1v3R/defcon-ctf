@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INTERMEDIATE :: YOU WIN</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  :root { --green:#00ff41; --darkgreen:#00aa2a; --bg:#0a0a0a; --dim:#003310; --amber:#ffb000; --gold:#ffd700; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--green); font-family:'Share Tech Mono',monospace; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:40px 20px; overflow-y:auto; -webkit-overflow-scrolling:touch; overflow-x:hidden; }
+  body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px); pointer-events:none; z-index:10; }
+  #matrix { position:fixed; inset:0; opacity:0.15; z-index:1; }
+  .container { max-width:640px; width:100%; border:1px solid var(--amber); padding:30px; position:relative; box-shadow:0 0 60px rgba(255,176,0,0.15); z-index:2; }
+  .container::before { content:'[ INTERMEDIATE :: MISSION COMPLETE ]'; position:absolute; top:-10px; left:20px; background:var(--bg); padding:0 8px; font-size:11px; color:var(--amber); }
+  .blink { animation:blink 1s step-end infinite; } @keyframes blink { 50%{opacity:0;} }
+  .level-indicator { display:flex; gap:8px; margin-bottom:20px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); }
+  .title { font-family:'VT323',monospace; font-size:clamp(36px,12vw,72px); text-shadow:0 0 30px var(--amber); color:var(--amber); margin-bottom:8px; }
+  .subtitle { color:#856a00; font-size:11px; letter-spacing:3px; margin-bottom:28px; }
+  .flag-box { background:var(--dim); border:2px solid var(--amber); padding:20px; margin-bottom:24px; text-align:center; box-shadow:0 0 20px rgba(255,176,0,0.15); }
+  .flag-box .label { font-size:10px; letter-spacing:4px; color:#856a00; margin-bottom:12px; }
+  .flag { font-family:'VT323',monospace; font-size:clamp(18px,5vw,30px); color:var(--gold); text-shadow:0 0 20px rgba(255,215,0,0.5); letter-spacing:1px; word-break:break-all; }
+  .stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px; }
+  .stat { background:#050505; border:1px solid #222; padding:12px; text-align:center; }
+  .stat .val { font-family:'VT323',monospace; font-size:28px; color:var(--amber); display:block; }
+  .stat .key { font-size:10px; color:var(--darkgreen); letter-spacing:2px; }
+  .message { font-size:13px; color:#aaffaa; line-height:1.9; margin-bottom:20px; }
+  .message strong { color:var(--amber); }
+  .dare { background:#0a0515; border:1px solid #333; padding:16px; font-size:13px; color:#888; line-height:1.8; margin-bottom:20px; }
+  .dare a { color:var(--amber); text-decoration:none; }
+  .footer { font-size:11px; color:#444; text-align:center; border-top:1px solid #1a1a1a; padding-top:16px; line-height:1.7; }
+  .footer span { color:var(--darkgreen); }
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="container">
+  <div class="level-indicator">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+  <div class="title">NICE WORK<span class="blink">!</span></div>
+  <div class="subtitle">// INTERMEDIATE PATH COMPLETE //</div>
+  <div class="flag-box">
+    <div class="label">// CAPTURED FLAG //</div>
+    <div class="flag">FLAG{y0u_kn0w_y0ur_w4y_4r0und}</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="val">4</span><span class="key">STAGES CLEARED</span></div>
+    <div class="stat"><span class="val">0</span><span class="key">HINTS USED</span></div>
+    <div class="stat"><span class="val">4</span><span class="key">CIPHERS CRACKED</span></div>
+    <div class="stat"><span class="val">1337</span><span class="key">HACKER SCORE</span></div>
+  </div>
+  <div class="message">
+    Binary. XOR. Chained encoding. You handled all of it without
+    a single hint from <strong>a paperclip</strong>.<br><br>
+    But there are 50 of these disks out there, and one path
+    you haven't tried yet.
+  </div>
+  <div class="dare">
+    &gt; Think you can handle <a href="https://d1rtd1v3r.github.io/defcon-ctf/">the expert path</a>?<br>
+    &gt; No hints. No labels. No mercy.
+  </div>
+  <div class="footer">
+    <span>One of 50 floppy disks</span> · DEF CON 2026<br>
+    Share the challenge, not the flag
+  </div>
+</div>
+<script>
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const cols = Math.floor(canvas.width / 16);
+  const drops = Array(cols).fill(1);
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%FLAG{y0u_kn0w}';
+  function draw() {
+    ctx.fillStyle = 'rgba(0,0,0,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#ffb000'; ctx.font = '14px Share Tech Mono';
+    drops.forEach((y,i) => {
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, y*16);
+      if(y*16>canvas.height && Math.random()>0.975) drops[i]=0;
+      drops[i]++;
+    });
+  }
+  setInterval(draw, 50);
+  window.addEventListener('resize', () => { canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
+</script>
+</body>
+</html>

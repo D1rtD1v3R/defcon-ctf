@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>...</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  :root{--green:#00ff41;--darkgreen:#00aa2a;--bg:#0a0a0a;--dim:#003310;--red:#ff4444;--amber:#ffb000;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--green);font-family:'Share Tech Mono',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:40px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px);pointer-events:none;z-index:10;}
+  .container{max-width:640px;width:100%;border:1px solid var(--red);padding:30px;position:relative;box-shadow:0 0 30px rgba(255,68,68,0.1);}
+  .container::before{content:'[ EXPERT ]';position:absolute;top:-10px;left:20px;background:var(--bg);padding:0 8px;font-size:11px;color:var(--red);}
+  .blink{animation:blink 1s step-end infinite;} @keyframes blink{50%{opacity:0;}}
+  .title{font-family:'VT323',monospace;font-size:clamp(28px,8vw,52px);color:var(--red);text-shadow:0 0 20px var(--red);margin-bottom:8px;}
+  .body{font-size:13px;color:#aaffaa;line-height:2;margin-bottom:24px;}
+  .encoded{font-family:'VT323',monospace;font-size:15px;color:var(--amber);word-break:break-all;line-height:1.8;background:var(--dim);border:1px solid #1a3a1a;padding:20px;margin-bottom:20px;}
+  .prompt{font-size:13px;color:#333;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">FRAGMENT 2<span class="blink">_</span></div>
+  <div class="body">FLAG_PART_2:h4x0r<br><br>Three operations were applied. Undo them.<br>Key for the last step: <span style="color:var(--red)">0xDE</span></div>
+  <div class="encoded">ba 89 ba b0 87 ec 87 e8 92 a7 e7 a6 93 89 88 b0 bd 8a 98 ae 93 ec 8b ab ba 96 84 b0 ba 89 b6 a8 92 b0 84 b7 92 ed 98 a7 bd ed 9c b7 87 8d ef a9 84 ed 93 a8 bd b3 aa b4 bd b3 88 b0 92 ec 84 b0 bc b0 8c a7 90 9d eb ef 84 ed ae eb</div>
+  <div class="prompt">&gt; <span class="blink">_</span></div>
+</div>
+</body>
+</html>

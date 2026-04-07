@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>...</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  :root{--green:#00ff41;--darkgreen:#00aa2a;--bg:#0a0a0a;--dim:#003310;--red:#ff4444;--amber:#ffb000;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--green);font-family:'Share Tech Mono',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:40px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px);pointer-events:none;z-index:10;}
+  .container{max-width:640px;width:100%;border:1px solid var(--red);padding:30px;position:relative;box-shadow:0 0 30px rgba(255,68,68,0.1);}
+  .container::before{content:'[ EXPERT :: FINAL ASSEMBLY ]';position:absolute;top:-10px;left:20px;background:var(--bg);padding:0 8px;font-size:11px;color:var(--red);}
+  .blink{animation:blink 1s step-end infinite;} @keyframes blink{50%{opacity:0;}}
+  .title{font-family:'VT323',monospace;font-size:clamp(28px,8vw,52px);color:var(--red);text-shadow:0 0 20px var(--red);margin-bottom:8px;}
+  .body{font-size:13px;color:#aaffaa;line-height:2;margin-bottom:24px;}
+  .fragment-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+  .frag{background:#050505;border:1px solid #1a1a1a;padding:12px;font-family:'VT323',monospace;font-size:18px;color:#333;letter-spacing:1px;}
+  .frag .frag-label{font-size:10px;letter-spacing:2px;color:#1a1a1a;font-family:'Share Tech Mono',monospace;display:block;margin-bottom:4px;}
+  .frag.found{border-color:var(--green);color:var(--green);}
+  .frag.found .frag-label{color:var(--darkgreen);}
+  .assembly{background:var(--dim);border:1px solid var(--darkgreen);padding:16px;margin-bottom:20px;font-size:12px;color:#888;line-height:1.8;}
+  .assembly span{color:var(--amber);}
+  .input-area label{display:block;font-size:11px;letter-spacing:2px;color:var(--darkgreen);margin-bottom:8px;}
+  .input-row{display:flex;gap:8px;}
+  input[type="text"]{flex:1;background:#050505;border:1px solid var(--darkgreen);color:var(--green);font-family:'Share Tech Mono',monospace;font-size:14px;padding:10px 14px;outline:none;}
+  input[type="text"]:focus{border-color:var(--green);box-shadow:0 0 8px rgba(0,255,65,0.2);}
+  button{background:var(--dim);border:1px solid var(--red);color:var(--red);font-family:'Share Tech Mono',monospace;font-size:13px;padding:10px 16px;cursor:pointer;transition:all 0.2s;}
+  button:hover{background:var(--red);color:var(--bg);}
+  .result{margin-top:12px;font-size:13px;min-height:20px;color:var(--red);}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">ASSEMBLE<span class="blink">_</span></div>
+  <div class="body">
+    You have all three fragments.<br>
+    Combine them. Wrap in <span style="color:var(--amber)">FLAG{}</span>. Submit.
+  </div>
+
+  <div class="fragment-grid">
+    <div class="frag found">
+      <span class="frag-label">// FRAGMENT 1 — SVG TITLE //</span>
+      3l173
+    </div>
+    <div class="frag found">
+      <span class="frag-label">// FRAGMENT 2 — TRIPLE CHAIN //</span>
+      h4x0r
+    </div>
+    <div class="frag found">
+      <span class="frag-label">// FRAGMENT 3 — CONSOLE //</span>
+      _0f_d3fc0n_2026
+    </div>
+  </div>
+
+  <div class="assembly">
+    &gt; Format: <span>FLAG{fragment1_fragment2fragment3}</span><br>
+    &gt; Join them. The underscores are part of the fragments.
+  </div>
+
+  <div class="input-area">
+    <label>// ENTER ASSEMBLED FLAG //</label>
+    <div class="input-row">
+      <input type="text" id="flagInput" placeholder="FLAG{...}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button onclick="checkFlag()">SUBMIT</button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+</div>
+<script>
+  function checkFlag() {
+    const input = document.getElementById('flagInput').value.trim();
+    const result = document.getElementById('result');
+    if (input === 'FLAG{3l173_h4x0r_0f_d3fc0n_2026}') {
+      window.location.href = 'https://d1rtd1v3r.github.io/defcon-ctf/expert/win.html';
+    } else if (input.toLowerCase().startsWith('flag{')) {
+      result.textContent = '> Fragments are right. Assembly is wrong.';
+    } else {
+      result.textContent = '> That is not a flag.';
+    }
+  }
+  document.getElementById('flagInput').addEventListener('keydown', e => { if(e.key==='Enter') checkFlag(); });
+</script>
+</body>
+</html>
