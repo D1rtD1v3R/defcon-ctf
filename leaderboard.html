@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEFCON 2026 CTF :: LEADERBOARD</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  :root { --green:#00ff41; --darkgreen:#00aa2a; --bg:#0a0a0a; --dim:#003310; --amber:#ffb000; --red:#ff4444; --cyan:#00ffff; --gold:#ffd700; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--green); font-family:'Share Tech Mono',monospace; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:40px 20px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px); pointer-events:none; z-index:10; }
+  .container { max-width:640px; width:100%; }
+  .header { border:1px solid var(--darkgreen); padding:30px; position:relative; box-shadow:0 0 30px rgba(0,255,65,0.1); margin-bottom:24px; }
+  .header::before { content:'[ DEFCON 2026 CTF :: HALL OF FAME ]'; position:absolute; top:-10px; left:20px; background:var(--bg); padding:0 8px; font-size:11px; color:var(--darkgreen); }
+  .blink { animation:blink 1s step-end infinite; } @keyframes blink { 50%{opacity:0;} }
+  .title { font-family:'VT323',monospace; font-size:clamp(32px,10vw,60px); text-shadow:0 0 20px var(--green); margin-bottom:8px; }
+  .subtitle { color:var(--darkgreen); font-size:11px; letter-spacing:3px; margin-bottom:16px; }
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .stat { background:#050505; border:1px solid #1a1a1a; padding:12px; text-align:center; }
+  .stat .val { font-family:'VT323',monospace; font-size:28px; color:var(--green); display:block; }
+  .stat .key { font-size:10px; color:var(--darkgreen); letter-spacing:2px; }
+
+  .board { border:1px solid var(--darkgreen); margin-bottom:20px; }
+  .board-header { padding:14px 20px; border-bottom:1px solid var(--darkgreen); display:flex; align-items:center; gap:12px; }
+  .board-title { font-family:'VT323',monospace; font-size:24px; }
+  .board-title.all { color:var(--gold); }
+  .board-title.beginner { color:var(--green); }
+  .board-title.intermediate { color:var(--amber); }
+  .board-title.expert { color:var(--red); }
+  .board-count { font-size:11px; color:var(--darkgreen); margin-left:auto; }
+
+  .entry { display:flex; align-items:center; gap:12px; padding:12px 20px; border-bottom:1px solid #0a0a0a; font-size:13px; }
+  .entry:last-child { border-bottom:none; }
+  .entry:hover { background:#050505; }
+  .rank { font-family:'VT323',monospace; font-size:20px; min-width:28px; }
+  .rank.r1 { color:var(--gold); text-shadow:0 0 8px rgba(255,215,0,0.5); }
+  .rank.r2 { color:#c0c0c0; }
+  .rank.r3 { color:#cd7f32; }
+  .rank.other { color:#333; }
+  .handle { flex:1; color:var(--green); }
+  .badge { font-size:10px; padding:2px 7px; border-radius:2px; letter-spacing:1px; }
+  .badge.beginner { background:#003310; color:var(--green); }
+  .badge.intermediate { background:#2a1a00; color:var(--amber); }
+  .badge.expert { background:#2a0000; color:var(--red); }
+  .time { font-size:11px; color:#333; }
+
+  .empty { padding:24px 20px; font-size:13px; color:#333; text-align:center; }
+
+  .loading { padding:24px 20px; font-size:13px; color:var(--darkgreen); text-align:center; }
+
+  .error-box { border:1px solid #333; padding:20px; margin-bottom:20px; font-size:12px; color:#666; line-height:1.8; }
+  .error-box span { color:var(--amber); }
+
+  .refresh-btn { display:block; width:100%; background:var(--dim); border:1px solid var(--darkgreen); color:var(--green); font-family:'Share Tech Mono',monospace; font-size:13px; padding:12px; cursor:pointer; letter-spacing:2px; margin-bottom:20px; transition:all 0.2s; }
+  .refresh-btn:hover { background:var(--green); color:var(--bg); }
+
+  .back { text-align:center; margin-top:8px; }
+  .back a { color:var(--darkgreen); font-size:12px; text-decoration:none; letter-spacing:2px; }
+  .back a:hover { color:var(--green); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="title">HALL OF FAME<span class="blink">_</span></div>
+    <div class="subtitle">// DEFCON 2026 FLOPPY DISK CTF //</div>
+    <div class="stats-row">
+      <div class="stat"><span class="val" id="total-count">--</span><span class="key">TOTAL FLAGS</span></div>
+      <div class="stat"><span class="val" id="expert-count">--</span><span class="key">EXPERT CLEARS</span></div>
+      <div class="stat"><span class="val" id="disk-count">50</span><span class="key">DISKS IN WILD</span></div>
+    </div>
+  </div>
+
+  <button class="refresh-btn" onclick="loadBoard()">[ REFRESH LEADERBOARD ]</button>
+
+  <!-- All-time board -->
+  <div class="board" id="board-all">
+    <div class="board-header">
+      <span class="board-title all">// ALL PATHS //</span>
+      <span class="board-count" id="count-all"></span>
+    </div>
+    <div class="loading" id="loading-all">Loading...</div>
+  </div>
+
+  <!-- Per-path boards -->
+  <div class="board" id="board-expert">
+    <div class="board-header">
+      <span class="board-title expert">// EXPERT //</span>
+      <span class="board-count" id="count-expert"></span>
+    </div>
+    <div class="loading" id="loading-expert">Loading...</div>
+  </div>
+
+  <div class="board" id="board-intermediate">
+    <div class="board-header">
+      <span class="board-title intermediate">// INTERMEDIATE //</span>
+      <span class="board-count" id="count-intermediate"></span>
+    </div>
+    <div class="loading" id="loading-intermediate">Loading...</div>
+  </div>
+
+  <div class="board" id="board-beginner">
+    <div class="board-header">
+      <span class="board-title beginner">// BEGINNER //</span>
+      <span class="board-count" id="count-beginner"></span>
+    </div>
+    <div class="loading" id="loading-beginner">Loading...</div>
+  </div>
+
+  <div class="back"><a href="https://d1rtd1v3r.github.io/defcon-ctf/">← BACK TO START</a></div>
+
+</div>
+
+<script>
+  // ============================================================
+  // REPLACE THIS WITH YOUR JSONBIN BIN ID AND API KEY
+  // 1. Go to https://jsonbin.io and create a free account
+  // 2. Create a new bin with initial content: {"entries":[]}
+  // 3. Set the bin to PUBLIC (so anyone can read without a key)
+  // 4. Copy your Bin ID and Master Key below
+  // ============================================================
+  const BIN_ID  = '69d94cab36566621a89d051d';
+  const API_KEY = '$2a$10$WVF1Ih4IUQe4NIX42wTwfOkiFZx./fiS55/1RUzjVY4engTmZoRX6';
+  const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+  function renderEntries(entries, containerId, loadingId, countId, filterPath) {
+    const loading = document.getElementById(loadingId);
+    const countEl = document.getElementById(countId);
+    const container = document.getElementById(containerId);
+
+    const filtered = filterPath
+      ? entries.filter(e => e.path === filterPath)
+      : entries;
+
+    filtered.sort((a, b) => new Date(a.ts) - new Date(b.ts));
+
+    countEl.textContent = filtered.length + ' entr' + (filtered.length === 1 ? 'y' : 'ies');
+
+    if (filtered.length === 0) {
+      loading.className = 'empty';
+      loading.textContent = '> No entries yet. Be the first.';
+      return;
+    }
+
+    loading.remove();
+
+    filtered.forEach((entry, i) => {
+      const rank = i + 1;
+      const rankClass = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : 'other';
+      const medal = rank === 1 ? '#' : rank === 2 ? '#' : rank === 3 ? '#' : '#';
+      const date = new Date(entry.ts).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+
+      const div = document.createElement('div');
+      div.className = 'entry';
+      div.innerHTML = `
+        <span class="rank ${rankClass}">${rank}</span>
+        <span class="handle">${escHtml(entry.handle)}</span>
+        <span class="badge ${entry.path}">${entry.path.toUpperCase()}</span>
+        <span class="time">${date}</span>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  async function loadBoard() {
+    ['all','expert','intermediate','beginner'].forEach(id => {
+      const el = document.getElementById('loading-' + id);
+      if (el) { el.className = 'loading'; el.textContent = 'Loading...'; }
+      const board = document.getElementById('board-' + id);
+      board.querySelectorAll('.entry').forEach(e => e.remove());
+    });
+
+    try {
+      const res = await fetch(API_URL + '/latest', {
+        headers: { 'X-Master-Key': API_KEY }
+      });
+      const data = await res.json();
+      const entries = data.record.entries || [];
+
+      document.getElementById('total-count').textContent = entries.length;
+      document.getElementById('expert-count').textContent = entries.filter(e => e.path === 'expert').length;
+
+      renderEntries(entries, 'board-all',          'loading-all',          'count-all',          null);
+      renderEntries(entries, 'board-expert',        'loading-expert',       'count-expert',       'expert');
+      renderEntries(entries, 'board-intermediate',  'loading-intermediate', 'count-intermediate', 'intermediate');
+      renderEntries(entries, 'board-beginner',      'loading-beginner',     'count-beginner',     'beginner');
+
+    } catch(err) {
+      ['all','expert','intermediate','beginner'].forEach(id => {
+        const el = document.getElementById('loading-' + id);
+        if (el) { el.className = 'empty'; el.textContent = '> Error loading board. Try refreshing.'; }
+      });
+    }
+  }
+
+  loadBoard();
+</script>
+</body>
+</html>
