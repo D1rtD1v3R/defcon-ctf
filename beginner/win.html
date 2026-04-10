@@ -235,6 +235,87 @@
     <strong>You've earned your badge upgrade. Welcome to the club. 🖤</strong>
   </div>
 
+
+<!-- LEADERBOARD SUBMISSION -->
+<div style="border:1px solid var(--darkgreen);padding:20px;margin-bottom:20px;position:relative;">
+  <div style="position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font-size:11px;color:var(--darkgreen);">[ HALL OF FAME ]</div>
+  <p style="font-size:13px;color:#aaffaa;line-height:1.8;margin-bottom:16px;">
+    Want your handle on the leaderboard?<br>
+    <span style="color:var(--darkgreen);font-size:11px;">Totally optional. Handle only. No other data stored.</span>
+  </p>
+  <div style="display:flex;gap:8px;margin-bottom:10px;">
+    <input type="text" id="lb-handle" placeholder="your handle" maxlength="32"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      style="flex:1;background:#050505;border:1px solid var(--darkgreen);color:var(--green);font-family:'Share Tech Mono',monospace;font-size:14px;padding:10px 14px;outline:none;">
+    <button id="lb-btn" onclick="submitHandle()"
+      style="background:var(--dim);border:1px solid var(--green);color:var(--green);font-family:'Share Tech Mono',monospace;font-size:13px;padding:10px 16px;cursor:pointer;transition:all 0.2s;">
+      SUBMIT
+    </button>
+  </div>
+  <div id="lb-result" style="font-size:12px;min-height:18px;color:var(--darkgreen);"></div>
+  <div style="margin-top:14px;border-top:1px solid #1a1a1a;padding-top:14px;">
+    <a href="https://d1rtd1v3r.github.io/defcon-ctf/leaderboard.html"
+      style="font-size:12px;color:var(--darkgreen);text-decoration:none;letter-spacing:2px;">
+      VIEW LEADERBOARD →
+    </a>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // REPLACE WITH YOUR JSONBIN BIN ID AND MASTER KEY
+  // ============================================================
+  var LB_BIN_ID  = '69d94cab36566621a89d051d';
+  var LB_API_KEY = '$2a$10$WVF1Ih4IUQe4NIX42wTwfOkiFZx./fiS55/1RUzjVY4engTmZoRX6';
+  var LB_PATH    = 'beginner';
+  var LB_URL     = 'https://api.jsonbin.io/v3/b/' + LB_BIN_ID;
+
+  function submitHandle() {
+    var handle = document.getElementById('lb-handle').value.trim();
+    var result = document.getElementById('lb-result');
+    var btn    = document.getElementById('lb-btn');
+
+    if (!handle) { result.textContent = '> Enter a handle first.'; return; }
+    if (handle.length > 32) { result.textContent = '> Max 32 characters.'; return; }
+    if (!/^[a-zA-Z0-9_\-\.]+$/.test(handle)) {
+      result.textContent = '> Letters, numbers, _ - . only.';
+      return;
+    }
+
+    btn.textContent = 'SENDING...';
+    btn.disabled = true;
+
+    // Read current entries, append new one, write back
+    fetch(LB_URL + '/latest', { headers: { 'X-Master-Key': LB_API_KEY } })
+      .then(r => r.json())
+      .then(data => {
+        var entries = data.record.entries || [];
+        entries.push({ handle: handle, path: LB_PATH, ts: new Date().toISOString() });
+        return fetch(LB_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': LB_API_KEY },
+          body: JSON.stringify({ entries: entries })
+        });
+      })
+      .then(r => r.json())
+      .then(() => {
+        result.textContent = '> ' + handle + ' added to the board!';
+        result.style.color = 'var(--green)';
+        btn.textContent = 'SUBMITTED';
+      })
+      .catch(() => {
+        result.textContent = '> Submission failed. Try again.';
+        result.style.color = 'var(--red,#ff4444)';
+        btn.textContent = 'SUBMIT';
+        btn.disabled = false;
+      });
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement.id === 'lb-handle') submitHandle();
+  });
+</script>
+
   <div class="footer">
     Made with ❤️ and too much caffeine for DEF CON<br>
     <span>One of 50 floppy disks</span> · Share the challenge, not the flag
