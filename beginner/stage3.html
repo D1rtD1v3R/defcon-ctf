@@ -258,7 +258,6 @@
 
 <script>
   function runDump() {
-    sessionStorage.setItem('b_s3','1');
     const btn = document.querySelector('.dump-btn');
     btn.textContent = '[ DUMPING... ]';
     btn.disabled = true;
@@ -394,5 +393,6 @@
   }
 </script>
 
+<script>sessionStorage.setItem('b_s3','1');</script>
 </body>
 </html>
