@@ -193,13 +193,13 @@
 
   <div class="mission">
     <p>
-      Welcome, <strong>Hacker</strong>. You found one of 50 mysterious floppy disks
+      Welcome, <strong>new fish</strong>. You found one of 50 mysterious floppy disks
       scattered across DEF CON. Either you're clever, or just lucky.<br><br>
-      Your mission: prove you're more than a <strong>noob</strong> and capture the flag like a real <strong>h4x0r</strong>.
+      Your mission: prove you're more than a <strong>noob</strong> and capture the flag.
     </p>
 
     <div class="hint-box">
-      <div class="label">// STEP 1 //</div>
+      <div class="label">// STEP 1 — HINT //</div>
       <p style="margin-bottom:10px; font-size:13px; color:#aaffaa;">
         Look at the URL in your browser. See that <span style="color:var(--amber)">?badge=noob</span> parameter?<br>
         Only a noob would leave it like that.
@@ -209,6 +209,7 @@
       </div>
     </div>
 
+    <div class="prompt">&gt; Change <span style="color:var(--amber)">noob</span> to <span style="color:var(--green)">h4x0r</span> and reload.<span class="blink">_</span></div>
   </div>
 </div>
 
@@ -216,6 +217,7 @@
   // Easter egg: check for h4x0r badge param
   const params = new URLSearchParams(window.location.search);
   if (params.get('badge') === 'h4x0r') {
+    sessionStorage.setItem('b_s1','1');
     window.location.href = 'https://d1rtd1v3r.github.io/defcon-ctf/beginner/stage2.html';
   }
 </script>
@@ -272,6 +274,7 @@
   var clippyOpen = false;
 
   function clippyToggle() {
+    if (!clippyOpen) { var h = parseInt(sessionStorage.getItem('b_hints')||0)+1; sessionStorage.setItem('b_hints', h); }
     if (clippyOpen) { clippyClose(); return; }
     clippyStep = 0;
     clippyOpen = true;

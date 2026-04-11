@@ -26,11 +26,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 40px 20px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    overflow: auto;
+    overflow: hidden;
   }
 
   body::before {
@@ -236,6 +236,7 @@
   </div>
 
 
+<div id="lb-section">
 <!-- LEADERBOARD SUBMISSION -->
 <div style="border:1px solid var(--darkgreen);padding:20px;margin-bottom:20px;position:relative;">
   <div style="position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font-size:11px;color:var(--darkgreen);">[ HALL OF FAME ]</div>
@@ -316,6 +317,7 @@
   });
 </script>
 
+</div>
   <div class="footer">
     Made with ❤️ and too much caffeine for DEF CON<br>
     <span>One of 50 floppy disks</span> · Share the challenge, not the flag
@@ -354,5 +356,40 @@
     canvas.height = window.innerHeight;
   });
 </script>
+
+<script>
+(function() {
+  var required = ['b_s1','b_s2','b_s3','b_s4'];
+  var hintKey  = 'b_hints';
+  var missing  = required.filter(function(k) { return !sessionStorage.getItem(k); });
+
+  // Update hint count
+  var hints = parseInt(sessionStorage.getItem(hintKey) || 0);
+  var hintEl = document.getElementById('hint-count');
+  if (hintEl) hintEl.textContent = hints;
+
+  // Lock leaderboard if tokens missing
+  if (missing.length > 0) {
+    var lbSection = document.getElementById('lb-section');
+    if (lbSection) {
+      lbSection.innerHTML = `
+        <div style="border:1px solid #ff4444;padding:20px;margin-bottom:20px;position:relative;">
+          <div style="position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font-size:11px;color:#ff4444;">[ HALL OF FAME ]</div>
+          <p style="font-family:'VT323',monospace;font-size:22px;color:#ff4444;margin-bottom:12px;">NICE TRY.</p>
+          <p style="font-size:12px;color:#888;line-height:1.9;">
+            Navigating directly to the win page doesn't count.<br>
+            <span style="color:#ff4444;">We know what you did.</span><br><br>
+            Go back and actually solve it.<br>
+            The leaderboard is for people who earned it.
+          </p>
+          <div style="margin-top:14px;border-top:1px solid #1a1a1a;padding-top:14px;">
+            <a href="https://d1rtd1v3r.github.io/defcon-ctf/" style="font-size:12px;color:var(--darkgreen);text-decoration:none;letter-spacing:2px;">← START OVER</a>
+          </div>
+        </div>`;
+    }
+  }
+})();
+</script>
+
 </body>
 </html>

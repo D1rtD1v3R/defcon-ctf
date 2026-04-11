@@ -247,6 +247,10 @@
   <div class="tip" id="tip">
     <span>// ANALYST NOTE //</span><br>
     Something in that dump isn't junk data.<br>
+    Look for a <span>meta</span> tag with an encoded <span>content</span> attribute.<br>
+    Base64 decode the value → that's your next path.<br>
+    Tool: <span>base64decode.org</span> or your browser console:<br>
+    <span>atob("paste_value_here")</span>
   </div>
 
   <div class="prompt" id="prompt" style="display:none">&gt; Decode the value. Navigate to the path.<span class="blink">_</span></div>
@@ -254,6 +258,7 @@
 
 <script>
   function runDump() {
+    sessionStorage.setItem('b_s3','1');
     const btn = document.querySelector('.dump-btn');
     btn.textContent = '[ DUMPING... ]';
     btn.disabled = true;
@@ -360,6 +365,7 @@
   var clippyOpen = false;
 
   function clippyToggle() {
+    if (!clippyOpen) { var h = parseInt(sessionStorage.getItem('b_hints')||0)+1; sessionStorage.setItem('b_hints', h); }
     if (clippyOpen) { clippyClose(); return; }
     clippyStep = 0;
     clippyOpen = true;
