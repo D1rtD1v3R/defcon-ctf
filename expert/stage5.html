@@ -73,6 +73,7 @@
     const input = document.getElementById('flagInput').value.trim();
     const result = document.getElementById('result');
     if (input === 'FLAG{3l173_h4x0r_0f_d3fc0n_2026}') {
+      sessionStorage.setItem('e_s5','1');
       window.location.href = 'https://d1rtd1v3r.github.io/defcon-ctf/expert/win.html';
     } else if (input.toLowerCase().startsWith('flag{')) {
       result.textContent = '> Fragments are right. Assembly is wrong.';
