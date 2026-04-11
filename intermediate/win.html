@@ -63,6 +63,17 @@
     &gt; No hints. No labels. No mercy.
   </div>
 
+
+<div id="time-display" style="border:1px solid var(--darkgreen);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+  <div>
+    <div style="font-size:10px;letter-spacing:3px;color:var(--darkgreen);margin-bottom:4px;">// YOUR TIME //</div>
+    <div style="font-family:'VT323',monospace;font-size:32px;color:var(--green);text-shadow:0 0 10px var(--green);" id="elapsed-display">--:--</div>
+  </div>
+  <div style="font-size:12px;color:#555;line-height:1.8;flex:1;">
+    This is your solve time.<br>It'll be submitted with your handle.
+  </div>
+</div>
+
 <div id="lb-section">
 <!-- LEADERBOARD SUBMISSION -->
 <div style="border:1px solid var(--darkgreen);padding:20px;margin-bottom:20px;position:relative;">
@@ -98,6 +109,19 @@
   var LB_PATH    = 'intermediate';
   var LB_URL     = 'https://api.jsonbin.io/v3/b/' + LB_BIN_ID;
 
+  
+  function formatElapsed(ms) {
+    if (!ms || ms <= 0) return 'unknown';
+    var s = Math.floor(ms / 1000);
+    var m = Math.floor(s / 60);
+    var h = Math.floor(m / 60);
+    s = s % 60;
+    m = m % 60;
+    if (h > 0) return h + 'h ' + m + 'm ' + s + 's';
+    if (m > 0) return m + 'm ' + (s < 10 ? '0' : '') + s + 's';
+    return s + 's';
+  }
+
   function submitHandle() {
     var handle = document.getElementById('lb-handle').value.trim();
     var result = document.getElementById('lb-result');
@@ -118,7 +142,14 @@
       .then(r => r.json())
       .then(data => {
         var entries = data.record.entries || [];
-        entries.push({ handle: handle, path: LB_PATH, ts: new Date().toISOString() });
+        var _elapsed = parseInt(sessionStorage.getItem('ctf_elapsed') || 0);
+      entries.push({
+        handle: handle,
+        path: LB_PATH,
+        ts: new Date().toISOString(),
+        elapsed: _elapsed,
+        time: formatElapsed(_elapsed)
+      });
         return fetch(LB_URL, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'X-Master-Key': LB_API_KEY },
@@ -195,6 +226,23 @@
     }
   }
 })();
+</script>
+<!-- elapsed-display-init -->
+<script>
+  (function() {
+    var ms = parseInt(sessionStorage.getItem('ctf_elapsed') || 0);
+    var el = document.getElementById('elapsed-display');
+    if (el) {
+      if (!ms || ms <= 0) {
+        el.textContent = 'N/A';
+        el.style.color = '#555';
+      } else {
+        var s = Math.floor(ms/1000), m = Math.floor(s/60), h = Math.floor(m/60);
+        s=s%60; m=m%60;
+        el.textContent = h>0 ? h+'h '+m+'m '+s+'s' : m>0 ? m+'m '+(s<10?'0':'')+s+'s' : s+'s';
+      }
+    }
+  })();
 </script>
 </body>
 </html>

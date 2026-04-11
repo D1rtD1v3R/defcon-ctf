@@ -255,6 +255,8 @@
     // The hex decodes to: FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}
     if (input === 'FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}') {
       sessionStorage.setItem('b_s4','1');
+      var _start = parseInt(sessionStorage.getItem('ctf_start') || Date.now());
+      sessionStorage.setItem('ctf_elapsed', Date.now() - _start);
       window.location.href = 'https://d1rtd1v3r.github.io/defcon-ctf/beginner/win.html';
     } else if (input.toLowerCase().startsWith('flag{')) {
       result.textContent = '> Close... but not quite. Check your decode.';

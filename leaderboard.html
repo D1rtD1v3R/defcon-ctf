@@ -10,51 +10,53 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--green); font-family:'Share Tech Mono',monospace; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:40px 20px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
   body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px); pointer-events:none; z-index:10; }
-  .container { max-width:640px; width:100%; }
-  .header { border:1px solid var(--darkgreen); padding:30px; position:relative; box-shadow:0 0 30px rgba(0,255,65,0.1); margin-bottom:24px; }
+  .container { max-width:700px; width:100%; }
+  .header { border:1px solid var(--darkgreen); padding:28px; position:relative; box-shadow:0 0 30px rgba(0,255,65,0.1); margin-bottom:24px; }
   .header::before { content:'[ DEFCON 2026 CTF :: HALL OF FAME ]'; position:absolute; top:-10px; left:20px; background:var(--bg); padding:0 8px; font-size:11px; color:var(--darkgreen); }
   .blink { animation:blink 1s step-end infinite; } @keyframes blink { 50%{opacity:0;} }
-  .title { font-family:'VT323',monospace; font-size:clamp(32px,10vw,60px); text-shadow:0 0 20px var(--green); margin-bottom:8px; }
-  .subtitle { color:var(--darkgreen); font-size:11px; letter-spacing:3px; margin-bottom:16px; }
-  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .title { font-family:'VT323',monospace; font-size:clamp(32px,10vw,58px); text-shadow:0 0 20px var(--green); margin-bottom:8px; }
+  .subtitle { color:var(--darkgreen); font-size:11px; letter-spacing:3px; margin-bottom:20px; }
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
   .stat { background:#050505; border:1px solid #1a1a1a; padding:12px; text-align:center; }
   .stat .val { font-family:'VT323',monospace; font-size:28px; color:var(--green); display:block; }
-  .stat .key { font-size:10px; color:var(--darkgreen); letter-spacing:2px; }
-
-  .board { border:1px solid var(--darkgreen); margin-bottom:20px; }
-  .board-header { padding:14px 20px; border-bottom:1px solid var(--darkgreen); display:flex; align-items:center; gap:12px; }
-  .board-title { font-family:'VT323',monospace; font-size:24px; }
-  .board-title.all { color:var(--gold); }
-  .board-title.beginner { color:var(--green); }
-  .board-title.intermediate { color:var(--amber); }
-  .board-title.expert { color:var(--red); }
-  .board-count { font-size:11px; color:var(--darkgreen); margin-left:auto; }
-
-  .entry { display:flex; align-items:center; gap:12px; padding:12px 20px; border-bottom:1px solid #0a0a0a; font-size:13px; }
+  .stat .key { font-size:9px; color:var(--darkgreen); letter-spacing:2px; }
+  .tabs { display:flex; gap:0; border:1px solid var(--darkgreen); border-bottom:none; }
+  .tab { flex:1; padding:10px; font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:2px; cursor:pointer; text-align:center; background:#050505; color:#444; border:none; border-right:1px solid var(--darkgreen); transition:all 0.15s; }
+  .tab:last-child { border-right:none; }
+  .tab.active { background:var(--dim); color:var(--green); }
+  .tab:hover:not(.active) { background:#0a0a0a; color:#666; }
+  .tab-panels { border:1px solid var(--darkgreen); margin-bottom:20px; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+  .sort-header { display:flex; align-items:center; border-bottom:1px solid #111; }
+  .sort-btn { flex:1; padding:10px 14px; font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:2px; cursor:pointer; background:#050505; color:#444; border:none; border-right:1px solid #111; transition:all 0.15s; }
+  .sort-btn:last-child { border-right:none; }
+  .sort-btn.active { background:var(--dim); color:var(--green); }
+  .sort-btn:hover:not(.active) { color:#666; }
+  .col-labels { display:flex; align-items:center; gap:10px; padding:6px 16px; border-bottom:1px solid #0d0d0d; font-size:10px; color:#333; letter-spacing:1px; }
+  .cl-rank { min-width:28px; text-align:center; }
+  .cl-handle { flex:1; }
+  .cl-time { min-width:72px; text-align:right; }
+  .cl-date { min-width:52px; text-align:right; }
+  .entry { display:flex; align-items:center; gap:10px; padding:11px 16px; border-bottom:1px solid #0d0d0d; font-size:13px; }
   .entry:last-child { border-bottom:none; }
   .entry:hover { background:#050505; }
-  .rank { font-family:'VT323',monospace; font-size:20px; min-width:28px; }
-  .rank.r1 { color:var(--gold); text-shadow:0 0 8px rgba(255,215,0,0.5); }
-  .rank.r2 { color:#c0c0c0; }
-  .rank.r3 { color:#cd7f32; }
-  .rank.other { color:#333; }
-  .handle { flex:1; color:var(--green); }
-  .badge { font-size:10px; padding:2px 7px; border-radius:2px; letter-spacing:1px; }
-  .badge.beginner { background:#003310; color:var(--green); }
+  .rank { font-family:'VT323',monospace; font-size:22px; min-width:28px; text-align:center; }
+  .r1 { color:var(--gold); text-shadow:0 0 8px rgba(255,215,0,0.4); }
+  .r2 { color:#c0c0c0; }
+  .r3 { color:#cd7f32; }
+  .rn { color:#222; }
+  .handle { flex:1; color:var(--green); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .badge { font-size:10px; padding:2px 7px; border-radius:2px; letter-spacing:1px; flex-shrink:0; }
+  .badge.beginner     { background:#003310; color:var(--green); }
   .badge.intermediate { background:#2a1a00; color:var(--amber); }
-  .badge.expert { background:#2a0000; color:var(--red); }
-  .time { font-size:11px; color:#333; }
-
-  .empty { padding:24px 20px; font-size:13px; color:#333; text-align:center; }
-
-  .loading { padding:24px 20px; font-size:13px; color:var(--darkgreen); text-align:center; }
-
-  .error-box { border:1px solid #333; padding:20px; margin-bottom:20px; font-size:12px; color:#666; line-height:1.8; }
-  .error-box span { color:var(--amber); }
-
+  .badge.expert       { background:#2a0000; color:var(--red); }
+  .time-val { font-size:12px; color:var(--cyan); min-width:72px; text-align:right; }
+  .date-val { font-size:11px; color:#333; min-width:52px; text-align:right; }
+  .empty { padding:24px; font-size:13px; color:#333; text-align:center; }
+  .loading { padding:24px; font-size:13px; color:var(--darkgreen); text-align:center; }
   .refresh-btn { display:block; width:100%; background:var(--dim); border:1px solid var(--darkgreen); color:var(--green); font-family:'Share Tech Mono',monospace; font-size:13px; padding:12px; cursor:pointer; letter-spacing:2px; margin-bottom:20px; transition:all 0.2s; }
   .refresh-btn:hover { background:var(--green); color:var(--bg); }
-
   .back { text-align:center; margin-top:8px; }
   .back a { color:var(--darkgreen); font-size:12px; text-decoration:none; letter-spacing:2px; }
   .back a:hover { color:var(--green); }
@@ -62,143 +64,136 @@
 </head>
 <body>
 <div class="container">
-
   <div class="header">
     <div class="title">HALL OF FAME<span class="blink">_</span></div>
     <div class="subtitle">// DEFCON 2026 FLOPPY DISK CTF //</div>
     <div class="stats-row">
       <div class="stat"><span class="val" id="total-count">--</span><span class="key">TOTAL FLAGS</span></div>
       <div class="stat"><span class="val" id="expert-count">--</span><span class="key">EXPERT CLEARS</span></div>
-      <div class="stat"><span class="val" id="disk-count">50</span><span class="key">DISKS IN WILD</span></div>
+      <div class="stat"><span class="val" id="fastest-time">--</span><span class="key">FASTEST TIME</span></div>
+      <div class="stat"><span class="val">50</span><span class="key">DISKS IN WILD</span></div>
     </div>
   </div>
 
   <button class="refresh-btn" onclick="loadBoard()">[ REFRESH LEADERBOARD ]</button>
 
-  <!-- All-time board -->
-  <div class="board" id="board-all">
-    <div class="board-header">
-      <span class="board-title all">// ALL PATHS //</span>
-      <span class="board-count" id="count-all"></span>
-    </div>
-    <div class="loading" id="loading-all">Loading...</div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('all')">ALL PATHS</button>
+    <button class="tab" onclick="switchTab('beginner')" style="color:#336633;">BEGINNER</button>
+    <button class="tab" onclick="switchTab('intermediate')" style="color:#665500;">INTERMEDIATE</button>
+    <button class="tab" onclick="switchTab('expert')" style="color:#662222;">EXPERT</button>
   </div>
 
-  <!-- Per-path boards -->
-  <div class="board" id="board-expert">
-    <div class="board-header">
-      <span class="board-title expert">// EXPERT //</span>
-      <span class="board-count" id="count-expert"></span>
+  <div class="tab-panels">
+    <div class="tab-panel active" id="panel-all">
+      <div class="sort-header">
+        <button class="sort-btn active" onclick="setSort('all','first')">FIRST TO FINISH</button>
+        <button class="sort-btn" onclick="setSort('all','fastest')">FASTEST TIME</button>
+      </div>
+      <div class="col-labels"><span class="cl-rank">#</span><span class="cl-handle">HANDLE</span><span style="min-width:90px;font-size:10px;">PATH</span><span class="cl-time">TIME</span><span class="cl-date">DATE</span></div>
+      <div id="entries-all"><div class="loading">Loading...</div></div>
     </div>
-    <div class="loading" id="loading-expert">Loading...</div>
+    <div class="tab-panel" id="panel-beginner">
+      <div class="sort-header">
+        <button class="sort-btn active" onclick="setSort('beginner','first')">FIRST TO FINISH</button>
+        <button class="sort-btn" onclick="setSort('beginner','fastest')">FASTEST TIME</button>
+      </div>
+      <div class="col-labels"><span class="cl-rank">#</span><span class="cl-handle">HANDLE</span><span style="min-width:90px;font-size:10px;">PATH</span><span class="cl-time">TIME</span><span class="cl-date">DATE</span></div>
+      <div id="entries-beginner"><div class="loading">Loading...</div></div>
+    </div>
+    <div class="tab-panel" id="panel-intermediate">
+      <div class="sort-header">
+        <button class="sort-btn active" onclick="setSort('intermediate','first')">FIRST TO FINISH</button>
+        <button class="sort-btn" onclick="setSort('intermediate','fastest')">FASTEST TIME</button>
+      </div>
+      <div class="col-labels"><span class="cl-rank">#</span><span class="cl-handle">HANDLE</span><span style="min-width:90px;font-size:10px;">PATH</span><span class="cl-time">TIME</span><span class="cl-date">DATE</span></div>
+      <div id="entries-intermediate"><div class="loading">Loading...</div></div>
+    </div>
+    <div class="tab-panel" id="panel-expert">
+      <div class="sort-header">
+        <button class="sort-btn active" onclick="setSort('expert','first')">FIRST TO FINISH</button>
+        <button class="sort-btn" onclick="setSort('expert','fastest')">FASTEST TIME</button>
+      </div>
+      <div class="col-labels"><span class="cl-rank">#</span><span class="cl-handle">HANDLE</span><span style="min-width:90px;font-size:10px;">PATH</span><span class="cl-time">TIME</span><span class="cl-date">DATE</span></div>
+      <div id="entries-expert"><div class="loading">Loading...</div></div>
+    </div>
   </div>
 
-  <div class="board" id="board-intermediate">
-    <div class="board-header">
-      <span class="board-title intermediate">// INTERMEDIATE //</span>
-      <span class="board-count" id="count-intermediate"></span>
-    </div>
-    <div class="loading" id="loading-intermediate">Loading...</div>
-  </div>
-
-  <div class="board" id="board-beginner">
-    <div class="board-header">
-      <span class="board-title beginner">// BEGINNER //</span>
-      <span class="board-count" id="count-beginner"></span>
-    </div>
-    <div class="loading" id="loading-beginner">Loading...</div>
-  </div>
-
-  <div class="back"><a href="https://d1rtd1v3r.github.io/defcon-ctf/">← BACK TO START</a></div>
-
+  <div class="back"><a href="https://d1rtd1v3r.github.io/defcon-ctf/">&#8592; BACK TO START</a></div>
 </div>
 
 <script>
-  // ============================================================
-  // REPLACE THIS WITH YOUR JSONBIN BIN ID AND API KEY
-  // 1. Go to https://jsonbin.io and create a free account
-  // 2. Create a new bin with initial content: {"entries":[]}
-  // 3. Set the bin to PUBLIC (so anyone can read without a key)
-  // 4. Copy your Bin ID and Master Key below
-  // ============================================================
-  const BIN_ID  = '69d94cab36566621a89d051d';
-  const API_KEY = '$2a$10$WVF1Ih4IUQe4NIX42wTwfOkiFZx./fiS55/1RUzjVY4engTmZoRX6';
-  const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+  var BIN_ID  = '69d94cab36566621a89d051d';
+  var API_KEY = '$2a$10$WVF1Ih4IUQe4NIX42wTwfOkiFZx./fiS55/1RUzjVY4engTmZoRX6';
+  var API_URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+  var allEntries = [];
+  var sortState  = { all:'first', beginner:'first', intermediate:'first', expert:'first' };
 
-  function renderEntries(entries, containerId, loadingId, countId, filterPath) {
-    const loading = document.getElementById(loadingId);
-    const countEl = document.getElementById(countId);
-    const container = document.getElementById(containerId);
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-    const filtered = filterPath
-      ? entries.filter(e => e.path === filterPath)
-      : entries;
-
-    filtered.sort((a, b) => new Date(a.ts) - new Date(b.ts));
-
-    countEl.textContent = filtered.length + ' entr' + (filtered.length === 1 ? 'y' : 'ies');
-
-    if (filtered.length === 0) {
-      loading.className = 'empty';
-      loading.textContent = '> No entries yet. Be the first.';
-      return;
-    }
-
-    loading.remove();
-
-    filtered.forEach((entry, i) => {
-      const rank = i + 1;
-      const rankClass = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : 'other';
-      const medal = rank === 1 ? '#' : rank === 2 ? '#' : rank === 3 ? '#' : '#';
-      const date = new Date(entry.ts).toLocaleDateString('en-US', { month:'short', day:'numeric' });
-
-      const div = document.createElement('div');
-      div.className = 'entry';
-      div.innerHTML = `
-        <span class="rank ${rankClass}">${rank}</span>
-        <span class="handle">${escHtml(entry.handle)}</span>
-        <span class="badge ${entry.path}">${entry.path.toUpperCase()}</span>
-        <span class="time">${date}</span>
-      `;
-      container.appendChild(div);
-    });
+  function formatMs(ms) {
+    if (!ms || ms <= 0) return '—';
+    var s=Math.floor(ms/1000), m=Math.floor(s/60), h=Math.floor(m/60);
+    s=s%60; m=m%60;
+    if (h>0) return h+'h '+m+'m '+s+'s';
+    if (m>0) return m+'m '+(s<10?'0':'')+s+'s';
+    return s+'s';
   }
 
-  function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  function renderEntries(entries, containerId, path, sort) {
+    var container = document.getElementById(containerId);
+    var filtered  = path==='all' ? entries.slice() : entries.filter(function(e){ return e.path===path; });
+    if (sort==='fastest') {
+      filtered = filtered.filter(function(e){ return e.elapsed && e.elapsed>0; });
+      filtered.sort(function(a,b){ return a.elapsed-b.elapsed; });
+    } else {
+      filtered.sort(function(a,b){ return new Date(a.ts)-new Date(b.ts); });
+    }
+    if (filtered.length===0) { container.innerHTML='<div class="empty">&gt; No entries yet. Be the first.</div>'; return; }
+    var html='';
+    filtered.forEach(function(e,i) {
+      var rank=i+1, rc=rank===1?'r1':rank===2?'r2':rank===3?'r3':'rn';
+      var date=new Date(e.ts).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      html+='<div class="entry"><span class="rank '+rc+'">'+rank+'</span><span class="handle">'+esc(e.handle)+'</span><span class="badge '+(e.path||'')+'">'+esc((e.path||"").toUpperCase())+'</span><span class="time-val">'+formatMs(e.elapsed)+'</span><span class="date-val">'+date+'</span></div>';
+    });
+    container.innerHTML=html;
+  }
+
+  function renderAll() {
+    renderEntries(allEntries,'entries-all','all',sortState.all);
+    renderEntries(allEntries,'entries-beginner','beginner',sortState.beginner);
+    renderEntries(allEntries,'entries-intermediate','intermediate',sortState.intermediate);
+    renderEntries(allEntries,'entries-expert','expert',sortState.expert);
+  }
+
+  function setSort(tab, sort) {
+    sortState[tab]=sort;
+    var panel=document.getElementById('panel-'+tab);
+    panel.querySelectorAll('.sort-btn').forEach(function(b,i){ b.classList.toggle('active', (sort==='fastest')===i===1); });
+    renderEntries(allEntries,'entries-'+tab,tab,sort);
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(function(t,i){ t.classList.toggle('active',['all','beginner','intermediate','expert'][i]===tab); });
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.toggle('active',p.id==='panel-'+tab); });
   }
 
   async function loadBoard() {
-    ['all','expert','intermediate','beginner'].forEach(id => {
-      const el = document.getElementById('loading-' + id);
-      if (el) { el.className = 'loading'; el.textContent = 'Loading...'; }
-      const board = document.getElementById('board-' + id);
-      board.querySelectorAll('.entry').forEach(e => e.remove());
-    });
-
+    ['all','beginner','intermediate','expert'].forEach(function(id){ var el=document.getElementById('entries-'+id); if(el) el.innerHTML='<div class="loading">Loading...</div>'; });
     try {
-      const res = await fetch(API_URL + '/latest', {
-        headers: { 'X-Master-Key': API_KEY }
-      });
-      const data = await res.json();
-      const entries = data.record.entries || [];
-
-      document.getElementById('total-count').textContent = entries.length;
-      document.getElementById('expert-count').textContent = entries.filter(e => e.path === 'expert').length;
-
-      renderEntries(entries, 'board-all',          'loading-all',          'count-all',          null);
-      renderEntries(entries, 'board-expert',        'loading-expert',       'count-expert',       'expert');
-      renderEntries(entries, 'board-intermediate',  'loading-intermediate', 'count-intermediate', 'intermediate');
-      renderEntries(entries, 'board-beginner',      'loading-beginner',     'count-beginner',     'beginner');
-
+      var res=await fetch(API_URL+'/latest',{headers:{'X-Master-Key':API_KEY}});
+      var data=await res.json();
+      allEntries=(data.record&&data.record.entries)||[];
+      document.getElementById('total-count').textContent=allEntries.length;
+      document.getElementById('expert-count').textContent=allEntries.filter(function(e){return e.path==='expert';}).length;
+      var timed=allEntries.filter(function(e){return e.elapsed&&e.elapsed>0;});
+      timed.sort(function(a,b){return a.elapsed-b.elapsed;});
+      document.getElementById('fastest-time').textContent=timed.length?formatMs(timed[0].elapsed):'--';
+      renderAll();
     } catch(err) {
-      ['all','expert','intermediate','beginner'].forEach(id => {
-        const el = document.getElementById('loading-' + id);
-        if (el) { el.className = 'empty'; el.textContent = '> Error loading board. Try refreshing.'; }
-      });
+      ['all','beginner','intermediate','expert'].forEach(function(id){ var el=document.getElementById('entries-'+id); if(el) el.innerHTML='<div class="empty">&gt; Error loading. Try refreshing.</div>'; });
     }
   }
-
   loadBoard();
 </script>
 </body>
