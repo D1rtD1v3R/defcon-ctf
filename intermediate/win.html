@@ -47,7 +47,8 @@
   </div>
   <div class="stats">
     <div class="stat"><span class="val">4</span><span class="key">STAGES CLEARED</span></div>
-    <div class="stat"><span class="val" id="hint-count">0</span><span class="key">HINTS USED</span></div>
+    <div class="stat"><span class="val" id="hint-count">0</span>
+      <span class="key">HINTS USED</span></div>
     <div class="stat"><span class="val">4</span><span class="key">CIPHERS CRACKED</span></div>
     <div class="stat"><span class="val">1337</span><span class="key">HACKER SCORE</span></div>
   </div>
@@ -171,37 +172,29 @@
 
 <script>
 (function() {
-  var required = ['i_s1','i_s2','i_s3','i_s4'];
+  var required = ['i_s1', 'i_s2', 'i_s3', 'i_s4'];
   var hintKey  = 'i_hints';
   var missing  = required.filter(function(k) { return !sessionStorage.getItem(k); });
 
-  // Update hint count
   var hints = parseInt(sessionStorage.getItem(hintKey) || 0);
   var hintEl = document.getElementById('hint-count');
   if (hintEl) hintEl.textContent = hints;
 
-  // Lock leaderboard if tokens missing
   if (missing.length > 0) {
     var lbSection = document.getElementById('lb-section');
     if (lbSection) {
-      lbSection.innerHTML = `
-        <div style="border:1px solid #ff4444;padding:20px;margin-bottom:20px;position:relative;">
-          <div style="position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font-size:11px;color:#ff4444;">[ HALL OF FAME ]</div>
-          <p style="font-family:'VT323',monospace;font-size:22px;color:#ff4444;margin-bottom:12px;">NICE TRY.</p>
-          <p style="font-size:12px;color:#888;line-height:1.9;">
-            Navigating directly to the win page doesn't count.<br>
-            <span style="color:#ff4444;">We know what you did.</span><br><br>
-            Go back and actually solve it.<br>
-            The leaderboard is for people who earned it.
-          </p>
-          <div style="margin-top:14px;border-top:1px solid #1a1a1a;padding-top:14px;">
-            <a href="https://d1rtd1v3r.github.io/defcon-ctf/" style="font-size:12px;color:var(--darkgreen);text-decoration:none;letter-spacing:2px;">← START OVER</a>
-          </div>
-        </div>`;
+      lbSection.innerHTML = '<div style="border:1px solid #ff4444;padding:20px;margin-bottom:20px;position:relative;">'
+        + '<div style="position:absolute;top:-10px;left:16px;background:#0a0a0a;padding:0 8px;font-size:11px;color:#ff4444;">[ HALL OF FAME ]</div>'
+        + '<p style="font-family:VT323,monospace;font-size:22px;color:#ff4444;margin-bottom:12px;">NICE TRY.</p>'
+        + '<p style="font-size:12px;color:#888;line-height:1.9;">Navigating directly to the win page doesn&#39;t count.<br>'
+        + '<span style="color:#ff4444;">We know what you did.</span><br><br>'
+        + 'Go back and actually solve it.<br>The leaderboard is for people who earned it.</p>'
+        + '<div style="margin-top:14px;border-top:1px solid #1a1a1a;padding-top:14px;">'
+        + '<a href="https://d1rtd1v3r.github.io/defcon-ctf/" style="font-size:12px;color:#00aa2a;text-decoration:none;letter-spacing:2px;">← START OVER</a>'
+        + '</div></div>';
     }
   }
 })();
 </script>
-
 </body>
 </html>
