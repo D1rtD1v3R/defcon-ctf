@@ -273,80 +273,7 @@
   </div>
 </div>
 
-<script>
-  // ============================================================
-  // REPLACE WITH YOUR JSONBIN BIN ID AND MASTER KEY
-  // ============================================================
-  var LB_BIN_ID  = '69d94cab36566621a89d051d';
-  var LB_API_KEY = '$2a$10$WVF1Ih4IUQe4NIX42wTwfOkiFZx./fiS55/1RUzjVY4engTmZoRX6';
-  var LB_PATH    = 'beginner';
-  var LB_URL     = 'https://api.jsonbin.io/v3/b/' + LB_BIN_ID;
 
-  
-  function formatElapsed(ms) {
-    if (!ms || ms <= 0) return 'unknown';
-    var s = Math.floor(ms / 1000);
-    var m = Math.floor(s / 60);
-    var h = Math.floor(m / 60);
-    s = s % 60;
-    m = m % 60;
-    if (h > 0) return h + 'h ' + m + 'm ' + s + 's';
-    if (m > 0) return m + 'm ' + (s < 10 ? '0' : '') + s + 's';
-    return s + 's';
-  }
-
-  function submitHandle() {
-    var handle = document.getElementById('lb-handle').value.trim();
-    var result = document.getElementById('lb-result');
-    var btn    = document.getElementById('lb-btn');
-
-    if (!handle) { result.textContent = '> Enter a handle first.'; return; }
-    if (handle.length > 32) { result.textContent = '> Max 32 characters.'; return; }
-    if (!/^[a-zA-Z0-9_\-\.]+$/.test(handle)) {
-      result.textContent = '> Letters, numbers, _ - . only.';
-      return;
-    }
-
-    btn.textContent = 'SENDING...';
-    btn.disabled = true;
-
-    // Read current entries, append new one, write back
-    fetch(LB_URL + '/latest', { headers: { 'X-Master-Key': LB_API_KEY } })
-      .then(r => r.json())
-      .then(data => {
-        var entries = data.record.entries || [];
-        var _elapsed = parseInt(sessionStorage.getItem('ctf_elapsed') || 0);
-      entries.push({
-        handle: handle,
-        path: LB_PATH,
-        ts: new Date().toISOString(),
-        elapsed: _elapsed,
-        time: formatElapsed(_elapsed)
-      });
-        return fetch(LB_URL, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'X-Master-Key': LB_API_KEY },
-          body: JSON.stringify({ entries: entries })
-        });
-      })
-      .then(r => r.json())
-      .then(() => {
-        result.textContent = '> ' + handle + ' added to the board!';
-        result.style.color = 'var(--green)';
-        btn.textContent = 'SUBMITTED';
-      })
-      .catch(() => {
-        result.textContent = '> Submission failed. Try again.';
-        result.style.color = 'var(--red,#ff4444)';
-        btn.textContent = 'SUBMIT';
-        btn.disabled = false;
-      });
-  }
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && document.activeElement.id === 'lb-handle') submitHandle();
-  });
-</script>
 
 </div>
   <div class="footer">
@@ -430,6 +357,78 @@
       }
     }
   })();
+</script>
+<script>
+  // ── CONFIGURATION ──────────────────────────────────────────────────────
+  // Replace with your Cloudflare Worker URL after deployment
+  var WORKER_URL = 'hhttps://defcon-ctf-leaderboard.flecks55-triumph.workers.dev';
+  var LB_PATH    = 'beginner';
+
+  function formatElapsed(ms) {
+    if (!ms || ms <= 0) return 'unknown';
+    var s=Math.floor(ms/1000), m=Math.floor(s/60), h=Math.floor(m/60);
+    s=s%60; m=m%60;
+    if (h>0) return h+'h '+m+'m '+s+'s';
+    if (m>0) return m+'m '+(s<10?'0':'')+s+'s';
+    return s+'s';
+  }
+
+  function submitHandle() {
+    var handle = document.getElementById('lb-handle').value.trim();
+    var result = document.getElementById('lb-result');
+    var btn    = document.getElementById('lb-btn');
+
+    if (!handle) { result.textContent = '> Enter a handle first.'; return; }
+    if (handle.length > 32) { result.textContent = '> Max 32 characters.'; return; }
+    if (!/^[a-zA-Z0-9_\-.]+$/.test(handle)) {
+      result.textContent = '> Letters, numbers, _ - . only.';
+      return;
+    }
+
+    btn.textContent = 'SENDING...';
+    btn.disabled = true;
+
+    var elapsed = parseInt(sessionStorage.getItem('ctf_elapsed') || 0);
+
+    fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        handle: handle,
+        path: LB_PATH,
+        elapsed: elapsed,
+        time: formatElapsed(elapsed)
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        result.textContent = '> ' + handle + ' added to the board!';
+        result.style.color = 'var(--green)';
+        btn.textContent = 'SUBMITTED';
+      } else if (data.duplicate) {
+        result.textContent = '> ' + (data.error || 'Already on the board for this path.');
+        result.style.color = 'var(--amber)';
+        btn.textContent = 'SUBMIT';
+        btn.disabled = false;
+      } else {
+        result.textContent = '> ' + (data.error || 'Submission failed. Try again.');
+        result.style.color = 'var(--red,#ff4444)';
+        btn.textContent = 'SUBMIT';
+        btn.disabled = false;
+      }
+    })
+    .catch(function() {
+      result.textContent = '> Connection error. Try again.';
+      result.style.color = 'var(--red,#ff4444)';
+      btn.textContent = 'SUBMIT';
+      btn.disabled = false;
+    });
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement.id === 'lb-handle') submitHandle();
+  });
 </script>
 </body>
 </html>
