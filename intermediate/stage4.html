@@ -80,7 +80,7 @@
       sessionStorage.setItem('i_s4','1');
       var _start = parseInt(sessionStorage.getItem('ctf_start') || Date.now());
       sessionStorage.setItem('ctf_elapsed', Date.now() - _start);
-      window.location.href = 'https://d1rtd1v3r.github.io/defcon-ctf/intermediate/win.html';
+      window.location.href = 'win.html';
     } else if (input.toLowerCase().startsWith('flag{')) {
       result.textContent = '> Decoded correctly? Check your steps.';
       result.className = 'result';
