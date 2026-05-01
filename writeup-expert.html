@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXPERT WRITEUP :: DEFCON 2026 CTF</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+  :root {
+    --accent: #ff4444;
+    --dark-accent: #882222;
+    --bg: #0a0a0a;
+    --dim: #1a0000;
+    --green: #00ff41;
+    --darkgreen: #00aa2a;
+    --amber: #ffb000;
+    --cyan: #00ffff;
+    --gold: #ffd700;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,68,68,0.02) 2px, rgba(255,68,68,0.02) 4px);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .container { max-width: 700px; width: 100%; }
+
+  .header {
+    border: 1px solid var(--dark-accent);
+    padding: 28px 30px;
+    position: relative;
+    box-shadow: 0 0 30px rgba(255,68,68,0.1);
+    margin-bottom: 0;
+  }
+
+  .header::before {
+    content: '[ EXPERT PATH :: WRITEUP ]';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: var(--bg);
+    padding: 0 8px;
+    font-size: 11px;
+    color: var(--dark-accent);
+  }
+
+  .blink { animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .title {
+    font-family: 'VT323', monospace;
+    font-size: clamp(32px, 10vw, 58px);
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent);
+    margin-bottom: 6px;
+    animation: glitch 5s infinite;
+  }
+
+  @keyframes glitch {
+    0%,88%,100% { text-shadow: 0 0 20px var(--accent); transform: none; }
+    90% { transform: translateX(-2px); text-shadow: 2px 0 var(--cyan), -2px 0 var(--accent); }
+    92% { transform: translateX(2px); text-shadow: -2px 0 var(--cyan), 2px 0 var(--accent); }
+    94% { transform: none; }
+  }
+
+  .subtitle {
+    color: var(--dark-accent);
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 18px;
+  }
+
+  .flag-inline {
+    background: #110000;
+    border: 1px solid var(--dark-accent);
+    padding: 12px 16px;
+    display: inline-block;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    word-break: break-all;
+  }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+  .tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    background: #2a0000;
+    color: var(--accent);
+    border: 1px solid var(--dark-accent);
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    border: 1px solid var(--dark-accent);
+    border-top: none;
+    border-bottom: none;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    background: #050505;
+    color: #444;
+    border: none;
+    border-right: 1px solid var(--dark-accent);
+    border-bottom: 1px solid var(--dark-accent);
+    transition: all 0.15s;
+  }
+
+  .tab-btn:last-child { border-right: none; }
+  .tab-btn.active { background: var(--dim); color: var(--accent); }
+  .tab-btn:hover:not(.active) { color: #666; }
+
+  .tab-panel {
+    display: none;
+    border: 1px solid var(--dark-accent);
+    border-top: none;
+    padding: 28px;
+  }
+
+  .tab-panel.active { display: block; }
+
+  /* AFTER SOLVE */
+  .solve-intro {
+    font-size: 13px;
+    color: #aaffaa;
+    line-height: 1.9;
+    margin-bottom: 28px;
+  }
+
+  .solve-intro strong { color: var(--accent); }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--dark-accent);
+    margin-bottom: 14px;
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .tech-card { background: #050505; border: 1px solid #1a1a1a; padding: 14px; }
+
+  .tech-card .tech-name {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .tech-card .tech-desc { font-size: 11px; color: #555; line-height: 1.6; }
+
+  .stage-note { border: 1px solid #1a1a1a; margin-bottom: 12px; }
+
+  .stage-note-header {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #050505;
+  }
+
+  .stage-num { font-family: 'VT323', monospace; font-size: 20px; color: var(--dark-accent); min-width: 24px; }
+  .stage-title { font-size: 12px; color: var(--accent); letter-spacing: 1px; }
+
+  .stage-note-body {
+    padding: 14px 16px;
+    font-size: 12px;
+    color: #888;
+    line-height: 1.8;
+    border-top: 1px solid #111;
+  }
+
+  .stage-note-body strong { color: #aaffaa; }
+  .stage-note-body code {
+    background: #111;
+    color: var(--cyan);
+    padding: 1px 5px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+  }
+
+  .lb-link-row { border-top: 1px solid #1a1a1a; padding-top: 20px; margin-top: 8px; }
+  .lb-link-row a { color: var(--dark-accent); text-decoration: none; font-size: 12px; letter-spacing: 2px; }
+  .lb-link-row a:hover { color: var(--accent); }
+
+  /* WALKTHROUGH */
+  .wt-disclaimer {
+    border: 1px solid #1a1a1a;
+    padding: 14px 16px;
+    font-size: 12px;
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .wt-disclaimer span { color: var(--accent); }
+
+  details { border: 1px solid #1a1a1a; margin-bottom: 10px; }
+  details[open] { border-color: var(--dark-accent); }
+
+  summary {
+    padding: 14px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #050505;
+    list-style: none;
+    user-select: none;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #666;
+    transition: color 0.15s;
+  }
+
+  summary::-webkit-details-marker { display: none; }
+  summary::marker { display: none; }
+  details[open] summary { color: var(--accent); background: var(--dim); }
+  summary:hover { color: #aaa; }
+
+  .summary-icon {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--dark-accent);
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  details[open] .summary-icon { color: var(--accent); }
+
+  .summary-tag {
+    margin-left: auto;
+    font-size: 10px;
+    padding: 2px 7px;
+    background: #111;
+    color: #444;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  details[open] .summary-tag { background: #2a0000; color: var(--dark-accent); }
+
+  .spoiler-body {
+    padding: 20px;
+    border-top: 1px solid #111;
+    font-size: 12px;
+    color: #888;
+    line-height: 1.8;
+  }
+
+  .spoiler-body strong { color: #aaffaa; }
+  .spoiler-body code {
+    background: #111;
+    color: var(--cyan);
+    padding: 1px 5px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+  }
+
+  .step { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+  .step-num { font-family: 'VT323', monospace; font-size: 18px; color: var(--dark-accent); min-width: 20px; flex-shrink: 0; line-height: 1.4; }
+  .step-text { flex: 1; }
+
+  .answer-box {
+    background: var(--dim);
+    border: 1px solid var(--dark-accent);
+    padding: 12px 16px;
+    margin-top: 16px;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--gold);
+    word-break: break-all;
+    letter-spacing: 1px;
+  }
+
+  .answer-box .answer-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--dark-accent);
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .tools-row { margin-top: 12px; font-size: 11px; color: #444; letter-spacing: 1px; }
+  .tools-row span { color: var(--dark-accent); }
+
+  .encoded-block {
+    background: #050505;
+    border: 1px solid #1a1a1a;
+    padding: 12px 14px;
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    color: var(--amber);
+    word-break: break-all;
+    line-height: 1.8;
+    letter-spacing: 1px;
+    margin: 10px 0;
+  }
+
+  .highlight-block {
+    background: #050505;
+    border: 1px solid #2a0000;
+    padding: 12px 14px;
+    margin: 10px 0;
+    font-size: 12px;
+    color: var(--accent);
+    line-height: 1.7;
+  }
+
+  .highlight-block .hl-label {
+    font-size: 10px;
+    color: var(--dark-accent);
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .chain-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 12px 0;
+  }
+
+  .chain-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #050505;
+    border: 1px solid #111;
+    font-size: 12px;
+  }
+
+  .chain-arrow { color: var(--dark-accent); font-size: 16px; }
+
+  .chain-step.reverse { border-color: #2a0000; color: var(--accent); }
+
+  .divider { border: none; border-top: 1px solid #111; margin: 16px 0; }
+
+  .back-row { text-align: center; margin-top: 28px; }
+  .back-row a { color: var(--dark-accent); font-size: 12px; text-decoration: none; letter-spacing: 2px; }
+  .back-row a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="title">EXPERT<span class="blink">_</span></div>
+    <div class="subtitle">// DEFCON 2026 FLOPPY DISK CTF :: WRITEUP //</div>
+    <div class="flag-inline">FLAG{3l173_h4x0r_0f_d3fc0n_2026}</div>
+    <div class="tag-row">
+      <span class="tag">STEGO</span>
+      <span class="tag">ZERO-WIDTH CHARS</span>
+      <span class="tag">TRIPLE CHAIN</span>
+      <span class="tag">DEV TOOLS</span>
+      <span class="tag">5 STAGES</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('solve')">AFTER SOLVE</button>
+    <button class="tab-btn" onclick="switchTab('walk')">WALKTHROUGH</button>
+  </div>
+
+  <!-- AFTER SOLVE TAB -->
+  <div class="tab-panel active" id="panel-solve">
+    <div class="solve-intro">
+      SVG steganography. Zero-width character encoding. A triple cipher chain.
+      A flag fragment logged to the browser console in obfuscated JavaScript.<br><br>
+      You found all of it. At DEF CON. <strong>In line.</strong> You didn't need Clippy.
+      You never did.
+    </div>
+
+    <div class="section-label">// TECHNIQUES USED //</div>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <span class="tech-name">SVG STEGO</span>
+        <span class="tech-desc">Data hidden in an SVG title attribute — rendered invisible, present in the DOM</span>
+      </div>
+      <div class="tech-card">
+        <span class="tech-name">ZERO-WIDTH</span>
+        <span class="tech-desc">Unicode invisible characters encoding binary data between visible text characters</span>
+      </div>
+      <div class="tech-card">
+        <span class="tech-name">TRIPLE CHAIN</span>
+        <span class="tech-desc">ROT13 → Base64 → XOR 0xDE applied in sequence; reversed in the opposite order</span>
+      </div>
+      <div class="tech-card">
+        <span class="tech-name">DEV TOOLS</span>
+        <span class="tech-desc">Fragment hidden in console.log output — obfuscated with hex escape sequences</span>
+      </div>
+    </div>
+
+    <div class="section-label">// STAGE NOTES //</div>
+
+    <div class="stage-note">
+      <div class="stage-note-header">
+        <span class="stage-num">01</span>
+        <span class="stage-title">SVG TITLE ATTRIBUTE STEGANOGRAPHY</span>
+      </div>
+      <div class="stage-note-body">
+        The page rendered a black square. Nothing to see. But SVG elements have a
+        <code>&lt;title&gt;</code> child — used for accessibility and tooltips — that is
+        completely invisible in the rendered output. A right-click → Inspect Element
+        (or Ctrl+Shift+I → Elements panel) revealed:
+        <code>&lt;title&gt;FLAG_PART_1:3l173&lt;/title&gt;</code>.<br><br>
+        <strong>Real-world relevance:</strong> Data exfiltration and watermarking sometimes
+        hide payloads in SVG, PDF, and image metadata that passes visual inspection but persists
+        through transmission. The DOM is always richer than what you see rendered.
+      </div>
+    </div>
+
+    <div class="stage-note">
+      <div class="stage-note-header">
+        <span class="stage-num">02</span>
+        <span class="stage-title">ZERO-WIDTH CHARACTER STEGANOGRAPHY</span>
+      </div>
+      <div class="stage-note-body">
+        The text block contained hundreds of invisible Unicode codepoints embedded between
+        the visible characters — zero-width non-joiner (U+200C) and zero-width joiner (U+200D).
+        These are legitimate Unicode characters used for typographic control in certain scripts,
+        which makes them an effective steganographic carrier: they survive copy-paste, look
+        identical to whitespace, and bypass most content filters.<br><br>
+        The encoding used binary: ZWNJ (U+200C) = 0 and ZWJ (U+200D) = 1, in 8-bit groups.
+        Decoded, the invisible data spelled the path to the next stage.<br><br>
+        <strong>Real-world relevance:</strong> Zero-width character watermarking is actively used
+        in document exfiltration tracking, Slack message fingerprinting, and covert channel research.
+      </div>
+    </div>
+
+    <div class="stage-note">
+      <div class="stage-note-header">
+        <span class="stage-num">03</span>
+        <span class="stage-title">TRIPLE CIPHER CHAIN</span>
+      </div>
+      <div class="stage-note-body">
+        Stage 3 revealed <code>FLAG_PART_2:h4x0r</code> directly in the body text — the decoding
+        challenge here was finding the URL to navigate to Stage 4. Three operations had been applied
+        to the URL: <strong>ROT13 → Base64 encode → XOR each byte with 0xDE (222)</strong>.<br><br>
+        To reverse: XOR 0xDE first (the key was given), then Base64 decode, then ROT13.
+        Each step reduced the problem: XOR produced valid Base64, Base64 decoded to ROT13'd text,
+        ROT13 produced the URL. The three-step chain is a miniature demonstration of layered
+        obfuscation — each layer makes the next one non-obvious until you're already inside it.<br><br>
+        <strong>CyberChef strategy:</strong> Use "From Hex" → "XOR" (key DE) → "From Base64" → "ROT13".
+      </div>
+    </div>
+
+    <div class="stage-note">
+      <div class="stage-note-header">
+        <span class="stage-num">04</span>
+        <span class="stage-title">BROWSER CONSOLE EXTRACTION</span>
+      </div>
+      <div class="stage-note-body">
+        The page rendered nothing useful. But its JavaScript — run silently on page load —
+        logged the final fragment to the browser console using <code>console.log()</code>.
+        The script used hex-escaped string literals (<code>\x46\x4c\x41\x47...</code>)
+        and a base64-encoded message string to obscure the payload from casual source inspection.<br><br>
+        Opening DevTools (F12) before or after page load would reveal the console output in red:
+        <code>FLAG_PART_3:_0f_d3fc0n_2026</code>.<br><br>
+        <strong>Real-world relevance:</strong> Malicious scripts, credential harvesters, and
+        injected trackers regularly use the console for debug output left by developers. Browser
+        DevTools are a required tool for any serious web security work — open them before
+        you start analyzing any unfamiliar page.
+      </div>
+    </div>
+
+    <div class="stage-note">
+      <div class="stage-note-header">
+        <span class="stage-num">05</span>
+        <span class="stage-title">FRAGMENT ASSEMBLY</span>
+      </div>
+      <div class="stage-note-body">
+        The final stage displayed all three collected fragments and asked you to assemble them
+        into the complete flag. The format hint — <code>FLAG{fragment1_fragment2fragment3}</code> —
+        implied an underscore between part 1 and part 2, but part 3 <em>began</em> with an underscore,
+        making the join <code>3l173_h4x0r</code> + <code>_0f_d3fc0n_2026</code> non-obvious if
+        you expected symmetric separators.<br><br>
+        <strong>The assembled flag:</strong> <code>FLAG{3l173_h4x0r_0f_d3fc0n_2026}</code>
+      </div>
+    </div>
+
+    <div class="lb-link-row">
+      <a href="https://d1rtd1v3r.github.io/defcon-ctf/leaderboard.html">VIEW LEADERBOARD →</a>
+    </div>
+  </div>
+
+  <!-- WALKTHROUGH TAB -->
+  <div class="tab-panel" id="panel-walk">
+    <div class="wt-disclaimer">
+      <span>// SPOILERS BELOW //</span><br>
+      Nothing was labeled on the expert path. Everything is labeled here.
+      Each stage reveals independently. Open as many as you want.
+    </div>
+
+    <!-- Stage 1 -->
+    <details>
+      <summary>
+        <span class="summary-icon">+</span>
+        STAGE 1 &nbsp;·&nbsp; SVG TITLE ATTRIBUTE
+        <span class="summary-tag">STEGO</span>
+      </summary>
+      <div class="spoiler-body">
+        <strong>What the challenge gave you:</strong><br>
+        A page that said "Look harder." and rendered a black square SVG. No visible text, no links, no form.
+
+        <hr class="divider">
+
+        <div class="step">
+          <span class="step-num">1.</span>
+          <span class="step-text">Right-click the black square → <strong>Inspect Element</strong> (or press F12 → Elements tab).</span>
+        </div>
+        <div class="step">
+          <span class="step-num">2.</span>
+          <span class="step-text">In the DOM tree, expand the <code>&lt;svg&gt;</code> element. Find the child <code>&lt;title&gt;</code> tag.</span>
+        </div>
+
+        <div class="highlight-block">
+          <span class="hl-label">// SVG SOURCE //</span>
+          &lt;svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"&gt;<br>
+          &nbsp;&nbsp;<strong>&lt;title&gt;FLAG_PART_1:3l173&lt;/title&gt;</strong><br>
+          &nbsp;&nbsp;&lt;rect width="200" height="200" fill="#0a0a0a"/&gt;<br>
+          &lt;/svg&gt;
+        </div>
+
+        <div class="step">
+          <span class="step-num">3.</span>
+          <span class="step-text">Note <code>FLAG_PART_1:3l173</code>. Navigate to <code>/expert/stage2.html</code> (the page sets your session progress automatically).</span>
+        </div>
+
+        <div class="answer-box">
+          <span class="answer-label">// FRAGMENT 1 //</span>
+          3l173
+        </div>
+
+        <div class="tools-row"><span>// TOOLS //</span> Browser DevTools → Elements tab (F12) &nbsp;·&nbsp; Ctrl+U + search for "title"</div>
+      </div>
+    </details>
+
+    <!-- Stage 2 -->
+    <details>
+      <summary>
+        <span class="summary-icon">+</span>
+        STAGE 2 &nbsp;·&nbsp; ZERO-WIDTH CHARACTER STEGANOGRAPHY
+        <span class="summary-tag">ZERO-WIDTH</span>
+      </summary>
+      <div class="spoiler-body">
+        <strong>What the challenge gave you:</strong><br>
+        A text block. "Between every letter, in the spaces where nothing appears to live, information hides." Nothing else.
+
+        <hr class="divider">
+
+        <div class="step">
+          <span class="step-num">1.</span>
+          <span class="step-text">Select all text in the block and copy it. The copied text will contain hundreds of invisible zero-width Unicode characters that aren't visible in the rendered page.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">2.</span>
+          <span class="step-text">Paste the text into a zero-width character detector/decoder. The tool will extract only the invisible characters and decode them.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">3.</span>
+          <span class="step-text">The encoding uses: Zero-Width Non-Joiner (U+200C) = 0 bit, Zero-Width Joiner (U+200D) = 1 bit, in 8-bit groups to form ASCII bytes.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">4.</span>
+          <span class="step-text">The decoded binary represents the path to Stage 3. Navigate there.</span>
+        </div>
+
+        <div class="answer-box">
+          <span class="answer-label">// DECODED PATH //</span>
+          /expert/stage3.html
+        </div>
+
+        <div class="tools-row"><span>// TOOLS //</span>330k.github.io/zwsp-steg-js &nbsp;·&nbsp; Unicode inspector at apps.timwhitlock.info/unicode/inspect &nbsp;·&nbsp; Browser console: extract chars with <code>[...text].filter(c => c.charCodeAt(0) > 8199 && c.charCodeAt(0) &lt; 8210)</code></div>
+      </div>
+    </details>
+
+    <!-- Stage 3 -->
+    <details>
+      <summary>
+        <span class="summary-icon">+</span>
+        STAGE 3 &nbsp;·&nbsp; TRIPLE CIPHER CHAIN
+        <span class="summary-tag">XOR · B64 · ROT13</span>
+      </summary>
+      <div class="spoiler-body">
+        <strong>What the challenge gave you:</strong><br>
+        Fragment 2 shown in body text. A block of hex bytes. "Three operations were applied. Undo them. Key for the last step: <code>0xDE</code>"
+
+        <hr class="divider">
+
+        <strong>The encoding chain (applied in this order):</strong>
+        <div class="chain-steps">
+          <div class="chain-step">1 &nbsp; ROT13 applied to the original URL</div>
+          <div class="chain-step">2 &nbsp; Base64 encode the ROT13 output</div>
+          <div class="chain-step">3 &nbsp; XOR each byte of the Base64 string with 0xDE → hex output</div>
+        </div>
+
+        <strong>To reverse (opposite order):</strong>
+        <div class="chain-steps">
+          <div class="chain-step reverse">1 &nbsp; XOR each ciphertext byte with 0xDE &nbsp; → &nbsp; valid Base64 string</div>
+          <div class="chain-step reverse">2 &nbsp; Base64 decode &nbsp; → &nbsp; ROT13'd URL</div>
+          <div class="chain-step reverse">3 &nbsp; ROT13 &nbsp; → &nbsp; the real URL</div>
+        </div>
+
+        <div class="encoded-block">ba 89 ba b0 87 ec 87 e8 92 a7 e7 a6 93 89 88 b0 bd 8a 98 ae 93 ec 8b ab ba 96 84 b0 ba 89 b6 a8 92 b0 84 b7 92 ed 98 a7 bd ed 9c b7 87 8d ef a9 84 ed 93 a8 bd b3 aa b4 bd b3 88 b0 92 ec 84 b0 bc b0 8c a7 90 9d eb ef 84 ed ae eb</div>
+
+        <div class="step">
+          <span class="step-num">1.</span>
+          <span class="step-text">XOR 0xDE: paste hex into CyberChef → "From Hex" → "XOR" (key: DE). Output: a Base64 string.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">2.</span>
+          <span class="step-text">"From Base64": the output is a ROT13-encoded URL (starts with <code>uggcf://</code>).</span>
+        </div>
+        <div class="step">
+          <span class="step-num">3.</span>
+          <span class="step-text">"ROT13": the output is the real URL. Navigate there.</span>
+        </div>
+
+        <div class="answer-box">
+          <span class="answer-label">// FRAGMENT 2 (shown on page) //</span>
+          h4x0r
+        </div>
+
+        <div class="answer-box" style="margin-top:8px;">
+          <span class="answer-label">// DECODED NAVIGATION URL //</span>
+          https://d1rtd1v3r.github.io/defcon-ctf/expert/stage4.html
+        </div>
+
+        <div class="tools-row"><span>// TOOLS //</span> CyberChef recipe: From Hex → XOR (DE) → From Base64 → ROT13 &nbsp;·&nbsp; gchq.github.io/CyberChef</div>
+      </div>
+    </details>
+
+    <!-- Stage 4 -->
+    <details>
+      <summary>
+        <span class="summary-icon">+</span>
+        STAGE 4 &nbsp;·&nbsp; BROWSER CONSOLE
+        <span class="summary-tag">DEV TOOLS</span>
+      </summary>
+      <div class="spoiler-body">
+        <strong>What the challenge gave you:</strong><br>
+        A page with a black box labeled "nothing to see here." Body text: "This page knows the last piece. It won't show you. You'll have to make it talk."
+
+        <hr class="divider">
+
+        <div class="step">
+          <span class="step-num">1.</span>
+          <span class="step-text">Open browser DevTools: press <strong>F12</strong> or right-click → Inspect → Console tab.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">2.</span>
+          <span class="step-text">The page's JavaScript runs silently on load and calls <code>console.log()</code> with a styled output. Look for red text in the console.</span>
+        </div>
+
+        <div class="highlight-block">
+          <span class="hl-label">// CONSOLE OUTPUT //</span>
+          You found it. Fragment 3:<br>
+          <strong style="color:#ff4444;">FLAG_PART_3:_0f_d3fc0n_2026</strong><br>
+          Now assemble all 3 fragments and navigate to /expert/stage5.html
+        </div>
+
+        <div class="step">
+          <span class="step-num">3.</span>
+          <span class="step-text">Note Fragment 3. Navigate to <code>/expert/stage5.html</code> as instructed.</span>
+        </div>
+
+        <div class="answer-box">
+          <span class="answer-label">// FRAGMENT 3 //</span>
+          _0f_d3fc0n_2026
+        </div>
+
+        <div class="tools-row"><span>// TOOLS //</span> Any browser → F12 → Console tab</div>
+      </div>
+    </details>
+
+    <!-- Stage 5 -->
+    <details>
+      <summary>
+        <span class="summary-icon">+</span>
+        STAGE 5 &nbsp;·&nbsp; FRAGMENT ASSEMBLY → FLAG
+        <span class="summary-tag">FINAL</span>
+      </summary>
+      <div class="spoiler-body">
+        <strong>What the challenge gave you:</strong><br>
+        All three fragments displayed. Format hint: <code>FLAG{fragment1_fragment2fragment3}</code>. An input box.
+
+        <hr class="divider">
+
+        <div class="step">
+          <span class="step-num">1.</span>
+          <span class="step-text">Fragment 1: <code>3l173</code> &nbsp; Fragment 2: <code>h4x0r</code> &nbsp; Fragment 3: <code>_0f_d3fc0n_2026</code></span>
+        </div>
+        <div class="step">
+          <span class="step-num">2.</span>
+          <span class="step-text">The format shows an underscore between fragment 1 and 2. Fragment 3 begins with an underscore — making the join: <code>3l173</code> + <code>_</code> + <code>h4x0r</code> + <code>_0f_d3fc0n_2026</code>.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">3.</span>
+          <span class="step-text">Wrap in <code>FLAG{}</code> and submit.</span>
+        </div>
+
+        <div class="answer-box">
+          <span class="answer-label">// FLAG //</span>
+          FLAG{3l173_h4x0r_0f_d3fc0n_2026}
+        </div>
+
+        <div class="tools-row"><span>// TOOLS //</span> Human brain only</div>
+      </div>
+    </details>
+
+  </div><!-- end walkthrough tab -->
+
+  <div class="back-row">
+    <a href="https://d1rtd1v3r.github.io/defcon-ctf/">← BACK TO START</a>
+    &nbsp;&nbsp;·&nbsp;&nbsp;
+    <a href="https://d1rtd1v3r.github.io/defcon-ctf/leaderboard.html">LEADERBOARD</a>
+  </div>
+
+</div>
+
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(function(b, i) {
+      b.classList.toggle('active', (i === 0 && tab === 'solve') || (i === 1 && tab === 'walk'));
+    });
+    document.getElementById('panel-solve').classList.toggle('active', tab === 'solve');
+    document.getElementById('panel-walk').classList.toggle('active', tab === 'walk');
+  }
+</script>
+</body>
+</html>

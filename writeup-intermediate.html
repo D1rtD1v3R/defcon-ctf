@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INTERMEDIATE WRITEUP :: DEFCON 2026 CTF</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+  :root {
+    --accent: #ffb000;
+    --dark-accent: #856a00;
+    --bg: #0a0a0a;
+    --dim: #1a1000;
+    --green: #00ff41;
+    --darkgreen: #00aa2a;
+    --cyan: #00ffff;
+    --red: #ff4444;
+    --gold: #ffd700;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,176,0,0.02) 2px, rgba(255,176,0,0.02) 4px);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .container { max-width: 700px; width: 100%; }
+
+  .header {
+    border: 1px solid var(--dark-accent);
+    padding: 28px 30px;
+    position: relative;
+    box-shadow: 0 0 30px rgba(255,176,0,0.08);
+    margin-bottom: 0;
+  }
+
+  .header::before {
+    content: '[ INTERMEDIATE PATH :: WRITEUP ]';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: var(--bg);
+    padding: 0 8px;
+    font-size: 11px;
+    color: var(--dark-accent);
+  }
+
+  .blink { animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .title {
+    font-family: 'VT323', monospace;
+    font-size: clamp(32px, 10vw, 58px);
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    color: var(--dark-accent);
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 18px;
+  }
+
+  .flag-inline {
+    background: #150e00;
+    border: 1px solid var(--dark-accent);
+    padding: 12px 16px;
+    display: inline-block;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    word-break: break-all;
+  }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    background: #2a1a00;
+    color: var(--accent);
+    border: 1px solid var(--dark-accent);
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    border: 1px solid var(--dark-accent);
+    border-top: none;
+    border-bottom: none;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    background: #050505;
+    color: #444;
+    border: none;
+    border-right: 1px solid var(--dark-accent);
+    border-bottom: 1px solid var(--dark-accent);
+    transition: all 0.15s;
+  }
+
+  .tab-btn:last-child { border-right: none; }
+  .tab-btn.active { background: var(--dim); color: var(--accent); }
+  .tab-btn:hover:not(.active) { color: #666; }
+
+  .tab-panel {
+    display: none;
+    border: 1px solid var(--dark-accent);
+    border-top: none;
+    padding: 28px;
+  }
+
+  .tab-panel.active { display: block; }
+
+  /* AFTER SOLVE */
+  .solve-intro {
+    font-size: 13px;
+    color: #aaffaa;
+    line-height: 1.9;
+    margin-bottom: 28px;
+  }
+
+  .solve-intro strong { color: var(--accent); }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--dark-accent);
+    margin-bottom: 14px;
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .tech-card {
+    background: #050505;
+    border: 1px solid #1a1a1a;
+    padding: 14px;
+  }
+
+  .tech-card .tech-name {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .tech-card .tech-desc {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.6;
+  }
+
+  .stage-note { border: 1px solid #1a1a1a; margin-bottom: 12px; }
+
+  .stage-note-header {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #050505;
+  }
+
+  .stage-num {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--dark-accent);
+    min-width: 24px;
+  }
+
+  .stage-title { font-size: 12px; color: var(--accent); letter-spacing: 1px; }
+
+  .stage-note-body {
+    padding: 14px 16px;
+    font-size: 12px;
+    color: #888;
+    line-height: 1.8;
+    border-top: 1px solid #111;
+  }
+
+  .stage-note-body strong { color: #aaffaa; }
+  .stage-note-body code {
+    background: #111;
+    color: var(--cyan);
+    padding: 1px 5px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+  }
+
+  .lb-link-row { border-top: 1px solid #1a1a1a; padding-top: 20px; margin-top: 8px; }
+  .lb-link-row a { color: var(--dark-accent); text-decoration: none; font-size: 12px; letter-spacing: 2px; }
+  .lb-link-row a:hover { color: var(--accent); }
+
+  /* WALKTHROUGH */
+  .wt-disclaimer {
+    border: 1px solid #1a1a1a;
+    padding: 14px 16px;
+    font-size: 12px;
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .wt-disclaimer span { color: var(--accent); }
+
+  details { border: 1px solid #1a1a1a; margin-bottom: 10px; }
+  details[open] { border-color: var(--dark-accent); }
+
+  summary {
+    padding: 14px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #050505;
+    list-style: none;
+    user-select: none;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #666;
+    transition: color 0.15s;
+  }
+
+  summary::-webkit-details-marker { display: none; }
+  summary::marker { display: none; }
+  details[open] summary { color: var(--accent); background: var(--dim); }
+  summary:hover { color: #aaa; }
+
+  .summary-icon {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--dark-accent);
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  details[open] .summary-icon { color: var(--accent); }
+
+  .summary-tag {
+    margin-left: auto;
+    font-size: 10px;
+    padding: 2px 7px;
+    background: #111;
+    color: #444;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  details[open] .summary-tag { background: #2a1a00; color: var(--dark-accent); }
+
+  .spoiler-body {
+    padding: 20px;
+    border-top: 1px solid #111;
+    font-size: 12px;
+    color: #888;
+    line-height: 1.8;
+  }
+
+  .spoiler-body strong { color: #aaffaa; }
+  .spoiler-body code {
+    background: #111;
+    color: var(--cyan);
+    padding: 1px 5px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+  }
+
+  .step { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+  .step-num { font-family: 'VT323', monospace; font-size: 18px; color: var(--dark-accent); min-width: 20px; flex-shrink: 0; line-height: 1.4; }
+  .step-text { flex: 1; }
+
+  .answer-box {
+    background: var(--dim);
+    border: 1px solid var(--dark-accent);
+    padding: 12px 16px;
+    margin-top: 16px;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--gold);
+    word-break: break-all;
+    letter-spacing: 1px;
+  }
+
+  .answer-box .answer-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--dark-accent);
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .tools-row { margin-top: 12px; font-size: 11px; color: #444; letter-spacing: 1px; }
+  .tools-row span { color: var(--dark-accent); }
+
+  .encoded-block {
+    background: #050505;
+    border: 1px solid #1a1a1a;
+    padding: 12px 14px;
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    color: var(--accent);
+    word-break: break-all;
+    line-height: 1.8;
+    letter-spacing: 1px;
+    margin: 10px 0;
+  }
+
+  .highlight-block {
+    background: #050505;
+    border: 1px solid #2a1a00;
+    padding: 12px 14px;
+    margin: 10px 0;
+    font-size: 12px;
+    color: var(--accent);
+    line-height: 1.7;
+  }
+
+  .highlight-block .hl-label {
+    font-size: 10px;
+    color: var(--dark-accent);
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .divider { border: none; border-top: 1px solid #111; margin: 16px 0; }
+
+  .back-row { text-align: center; margin-top: 28px; }
+  .back-row a { color: var(--dark-accent); font-size: 12px; text-decoration: none; letter-spacing: 2px; }
+  .back-row a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="title">INTERMEDIATE<span class="blink">_</span></div>
+    <div class="subtitle">// DEFCON 2026 FLOPPY DISK CTF :: WRITEUP //</div>
+    <div class="flag-inline">FLAG{y0u_kn0w_y0ur_w4y_4r0und}</div>
+    <div class="tag-row">
+      <span class="tag">BINARY</span>
+      <span class="tag">XOR</span>
+      <span class="tag">CHAINED CIPHERS</span>
+      <span class="tag">HEX + BASE64</span>
+      <span class="tag">4 STAGES</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('solve')">AFTER SOLVE</button>
+    <button class="tab-btn" onclick="switchTab('walk')">WALKTHROUGH</button>
+  </div>
+
+  <!-- AFTER SOLVE TAB -->
+  <div class="tab-panel active" id="panel-solve">
+    <div class="solve-intro">
+      No hints. No Clippy. <strong>Just you and the ciphertext.</strong><br><br>
+      The intermediate path was built around one idea: real encoding challenges don't come labeled.
+      You had to identify each scheme, find a hidden key, and chain operations in the right order.
+      That's the actual skill — not the decoding, but the <strong>recognition</strong>.
+    </div>
+
+    <div class="section-label">// TECHNIQUES USED //</div>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <span class="tech-name">BINARY</span>
+        <span class="tech-desc">8-bit binary groups to ASCII — the language computers actually speak</span>
+      </div>
+      <div class="tech-card">
+        <span class="tech-name">XOR</span>
+        <span class="tech-desc">Bitwise XOR with a repeating key — the backbone of symmetric encryption</span>
+      </div>
+      <div class="tech-card">
+        <span class="tech-name">CHAIN</span>
+        <span class="tech-desc">Multiple encodings layered in sequence — order of operations is everything</span>
+      </div>
+      <div class="tech-card">
+        <span class="tech-name">HEX+B64</span>
+        <span class="tech-desc">Two-step decode: hex reveals a Base64 string, Base64 reveals the flag</span>
+      </div>
+    </div>
+
+    <div class="section-label">// STAGE NOTES //</div>
+
+    <div class="stage-note">
+      <div class="stage-note-header">
+        <span class="stage-num">01</span>
+        <span class="stage-title">BINARY TO ASCII</span>
+      </div>
+      <div class="stage-note-body">
+        Binary isn't a cipher — it's a number system. Every byte is 8 bits; every ASCII character
+        is a byte. The intercepted transmission was just a URL written in 1s and 0s, broken into
+        8-bit groups. Groups of <code>01101000 01110100 01110100 01110000 01110011</code> = <code>https</code>.<br><br>
+        <strong>Real-world relevance:</strong> Network protocols, firmware dumps, and JTAG debugging all
+        expose data in binary or hex. Recognizing the pattern — 8-bit groups, all valid ASCII range — is
+        what gets you there without a tool.
+      </div>
+    </div>
+
+    <div class="stage-note">
+      <div class="stage-note-header">
+        <span class="stage-num">02</span>
+        <span class="stage-title">XOR WITH A HIDDEN KEY</span>
+      </div>
+      <div class="stage-note-body">
+        XOR encryption is only as strong as your ability to hide the key. The key in this stage was
+        concealed as a CSS color value: <code>.sys-bg { background-color: #4b657900; }</code> with the
+        comment <code>/* system palette -- do not modify */</code>.<br><br>
+        The 3-byte key was <code>#4b6579</code>: <code>0x4B</code> = K, <code>0x65</code> = e,
+        <code>0x79</code> = y. The key was literally <strong>"Key"</strong>. Applied cyclically to
+        each ciphertext byte, it decodes to <code>/intermediate/stage3.html</code>.<br><br>
+        <strong>The lesson:</strong> In real CTFs and real vulnerabilities, secrets hide where developers
+        assumed nobody would look. CSS comments, HTML attributes, environment variables left in source.
+      </div>
+    </div>
+
+    <div class="stage-note">
+      <div class="stage-note-header">
+        <span class="stage-num">03</span>
+        <span class="stage-title">CHAINED ENCODING: ROT13 + BASE64</span>
+      </div>
+      <div class="stage-note-body">
+        The double-encoded string looked like Base64 at first glance — but decode attempts would produce
+        garbage. The clue was in the flavor text: <em>"One was Caesar's favourite. The other is what
+        the internet uses to move binary data around. Order matters."</em><br><br>
+        The operations applied (in order): <strong>ROT13 → Base64 encode.</strong> To undo: ROT13
+        the encoded string first, then Base64 decode. Recognizing that ROT13 was applied before Base64
+        was the key insight — the resulting Base64 string after ROT13 is instantly recognizable as valid
+        Base64, and decodes cleanly to a URL.<br><br>
+        <strong>The lesson:</strong> When a decode produces garbage, you're either using the wrong
+        tool or the wrong order. Enumeration is the skill.
+      </div>
+    </div>
+
+    <div class="stage-note">
+      <div class="stage-note-header">
+        <span class="stage-num">04</span>
+        <span class="stage-title">HEX → BASE64 → FLAG</span>
+      </div>
+      <div class="stage-note-body">
+        The final stage layered two operations on the flag itself: it was Base64 encoded, then the
+        result was hex-encoded. Decode hex first to get a Base64 string, decode Base64 to get the flag.
+        The subtitle <code>// HEX → BASE64 → FLAG //</code> told you the order explicitly — the
+        challenge was trusting that you were reading it correctly.<br><br>
+        <strong>The lesson:</strong> Stage 3 made you figure out the order yourself. Stage 4 told
+        you the order and asked if you'd trust it. Both are skills.
+      </div>
+    </div>
+
+    <div class="lb-link-row">
+      <a href="https://d1rtd1v3r.github.io/defcon-ctf/leaderboard.html">VIEW LEADERBOARD →</a>
+    </div>
+  </div>
+
+  <!-- WALKTHROUGH TAB -->
+  <div class="tab-panel" id="panel-walk">
+    <div class="wt-disclaimer">
+      <span>// SPOILERS BELOW //</span><br>
+      No hints were available during the challenge. They're all available now.
+      Each stage reveals independently. Open as many as you want.
+    </div>
+
+    <!-- Stage 1 -->
+    <details>
+      <summary>
+        <span class="summary-icon">+</span>
+        STAGE 1 &nbsp;·&nbsp; BINARY TO ASCII
+        <span class="summary-tag">BINARY</span>
+      </summary>
+      <div class="spoiler-body">
+        <strong>What the challenge gave you:</strong><br>
+        A wall of 8-bit binary groups forming an intercepted "signal."
+
+        <hr class="divider">
+
+        <div class="step">
+          <span class="step-num">1.</span>
+          <span class="step-text">Each 8-bit group is one ASCII character. Group them and convert.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">2.</span>
+          <span class="step-text">The binary decodes to the full URL of Stage 2. Paste into a binary-to-text converter or use CyberChef "From Binary".</span>
+        </div>
+        <div class="step">
+          <span class="step-num">3.</span>
+          <span class="step-text">Navigate to the decoded URL.</span>
+        </div>
+
+        <div class="answer-box">
+          <span class="answer-label">// DECODED URL //</span>
+          https://d1rtd1v3r.github.io/defcon-ctf/intermediate/stage2.html
+        </div>
+
+        <div class="tools-row"><span>// TOOLS //</span> CyberChef "From Binary" &nbsp;·&nbsp; rapidtables.com/convert/number/binary-to-ascii.html</div>
+      </div>
+    </details>
+
+    <!-- Stage 2 -->
+    <details>
+      <summary>
+        <span class="summary-icon">+</span>
+        STAGE 2 &nbsp;·&nbsp; XOR WITH HIDDEN KEY
+        <span class="summary-tag">XOR</span>
+      </summary>
+      <div class="spoiler-body">
+        <strong>What the challenge gave you:</strong><br>
+        25 hex bytes, operation: XOR, key length: 3, key location: "this page."
+
+        <hr class="divider">
+
+        <div class="step">
+          <span class="step-num">1.</span>
+          <span class="step-text">View the page source. In the <code>&lt;style&gt;</code> block, look for:</span>
+        </div>
+
+        <div class="highlight-block">
+          <span class="hl-label">// FOUND IN PAGE CSS //</span>
+          /* system palette -- do not modify */<br>
+          .sys-bg { background-color: #4b657900; }
+        </div>
+
+        <div class="step">
+          <span class="step-num">2.</span>
+          <span class="step-text">The color <code>#4b6579</code> is a 3-byte key. Convert each byte to ASCII: <code>0x4B</code>=K, <code>0x65</code>=e, <code>0x79</code>=y. The key is <strong>"Key"</strong>.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">3.</span>
+          <span class="step-text">XOR each ciphertext byte with the key cycling: byte 1 XOR K, byte 2 XOR e, byte 3 XOR y, byte 4 XOR K, ...</span>
+        </div>
+
+        <div class="encoded-block">64 0c 17 3f 00 0b 26 00 1d 22 04 0d 2e 4a 0a 3f 04 1e 2e 56 57 23 11 14 27</div>
+
+        <div class="step">
+          <span class="step-num">4.</span>
+          <span class="step-text">The decoded bytes spell out the path. Navigate there.</span>
+        </div>
+
+        <div class="answer-box">
+          <span class="answer-label">// DECODED PATH //</span>
+          /intermediate/stage3.html
+        </div>
+
+        <div class="tools-row"><span>// TOOLS //</span> CyberChef: "From Hex" → "XOR" (key: 4b6579, scheme: Standard) &nbsp;·&nbsp; Browser console with manual XOR loop</div>
+      </div>
+    </details>
+
+    <!-- Stage 3 -->
+    <details>
+      <summary>
+        <span class="summary-icon">+</span>
+        STAGE 3 &nbsp;·&nbsp; ROT13 THEN BASE64
+        <span class="summary-tag">CHAINED</span>
+      </summary>
+      <div class="spoiler-body">
+        <strong>What the challenge gave you:</strong><br>
+        A base64-looking string. "Two encoding layers. Undo them in the right order."
+
+        <hr class="divider">
+
+        <div class="step">
+          <span class="step-num">1.</span>
+          <span class="step-text">The clue: "One was Caesar's favourite" = ROT13. "What the internet uses to move binary data" = Base64. "Order matters."</span>
+        </div>
+        <div class="step">
+          <span class="step-num">2.</span>
+          <span class="step-text">The encoding order was: ROT13 applied to the URL, then Base64 encoded. So to decode: <strong>ROT13 first</strong>, then Base64 decode.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">3.</span>
+          <span class="step-text">Apply ROT13 to the encoded string. The output should be recognizable as valid Base64.</span>
+        </div>
+
+        <div class="encoded-block">nUE0pUZ6Yl9xZKW0MQS2Z3VhM2y0nUIvYzyiY2EyMzAiov1wqTLinJ50MKWgMJEcLKEyY3A0LJqyAP5bqT1f</div>
+
+        <div class="step">
+          <span class="step-num">4.</span>
+          <span class="step-text">After ROT13: <code>aHR0cHM6Ly9kMXJ0ZDF2M3IuZ2l0aHViLmlvL2RlZmNvbi1jdGYvaW50ZXJtZWRpYXRlL3N0YWdlNC5odG1s</code></span>
+        </div>
+        <div class="step">
+          <span class="step-num">5.</span>
+          <span class="step-text">Base64 decode that result. Navigate to the decoded URL.</span>
+        </div>
+
+        <div class="answer-box">
+          <span class="answer-label">// DECODED URL //</span>
+          https://d1rtd1v3r.github.io/defcon-ctf/intermediate/stage4.html
+        </div>
+
+        <div class="tools-row"><span>// TOOLS //</span> CyberChef: "ROT13" → "From Base64" &nbsp;·&nbsp; rot13.com then base64decode.org</div>
+      </div>
+    </details>
+
+    <!-- Stage 4 -->
+    <details>
+      <summary>
+        <span class="summary-icon">+</span>
+        STAGE 4 &nbsp;·&nbsp; HEX → BASE64 → FLAG
+        <span class="summary-tag">HEX + BASE64</span>
+      </summary>
+      <div class="spoiler-body">
+        <strong>What the challenge gave you:</strong><br>
+        Hex bytes. Subtitle: <code>// HEX → BASE64 → FLAG //</code>
+
+        <hr class="divider">
+
+        <div class="step">
+          <span class="step-num">1.</span>
+          <span class="step-text">Decode the hex bytes to get an intermediate string.</span>
+        </div>
+
+        <div class="encoded-block">52 6b 78 42 52 33 74 35 4d 48 56 66 61 32 34 77 64 31 39 35 4d 48 56 79 58 33 63 30 65 56 38 30 63 6a 42 31 62 6d 52 39</div>
+
+        <div class="step">
+          <span class="step-num">2.</span>
+          <span class="step-text">The hex decodes to: <code>RkxBR3t5MHVfa240d195MHVyX3c0eV80cjB1bmR9</code> — which is Base64.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">3.</span>
+          <span class="step-text">Base64 decode that string to get the flag.</span>
+        </div>
+
+        <div class="answer-box">
+          <span class="answer-label">// FLAG //</span>
+          FLAG{y0u_kn0w_y0ur_w4y_4r0und}
+        </div>
+
+        <div class="tools-row"><span>// TOOLS //</span> CyberChef: "From Hex" → "From Base64" &nbsp;·&nbsp; gchq.github.io/CyberChef</div>
+      </div>
+    </details>
+
+  </div><!-- end walkthrough tab -->
+
+  <div class="back-row">
+    <a href="https://d1rtd1v3r.github.io/defcon-ctf/">← BACK TO START</a>
+    &nbsp;&nbsp;·&nbsp;&nbsp;
+    <a href="https://d1rtd1v3r.github.io/defcon-ctf/leaderboard.html">LEADERBOARD</a>
+  </div>
+
+</div>
+
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(function(b, i) {
+      b.classList.toggle('active', (i === 0 && tab === 'solve') || (i === 1 && tab === 'walk'));
+    });
+    document.getElementById('panel-solve').classList.toggle('active', tab === 'solve');
+    document.getElementById('panel-walk').classList.toggle('active', tab === 'walk');
+  }
+</script>
+</body>
+</html>
