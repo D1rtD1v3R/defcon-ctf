@@ -178,10 +178,20 @@
     document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.toggle('active',p.id==='panel-'+tab); });
   }
 
+  var lastLoad = 0;
+
   async function loadBoard() {
+    lastLoad = Date.now();
     ['all','beginner','intermediate','expert'].forEach(function(id){ var el=document.getElementById('entries-'+id); if(el) el.innerHTML='<div class="loading">Loading...</div>'; });
+    var slowTimer = setTimeout(function(){
+      ['all','beginner','intermediate','expert'].forEach(function(id){
+        var el=document.getElementById('entries-'+id);
+        if(el && el.querySelector('.loading')) el.innerHTML='<div class="loading">Still loading... network may be slow.</div>';
+      });
+    }, 8000);
     try {
       var res=await fetch(API_URL+'/latest',{headers:{'X-Master-Key':API_KEY}});
+      clearTimeout(slowTimer);
       var data=await res.json();
       allEntries=(data.record&&data.record.entries)||[];
       document.getElementById('total-count').textContent=allEntries.length;
@@ -191,9 +201,15 @@
       document.getElementById('fastest-time').textContent=timed.length?formatMs(timed[0].elapsed):'--';
       renderAll();
     } catch(err) {
+      clearTimeout(slowTimer);
       ['all','beginner','intermediate','expert'].forEach(function(id){ var el=document.getElementById('entries-'+id); if(el) el.innerHTML='<div class="empty">&gt; Error loading. Try refreshing.</div>'; });
     }
   }
+
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && Date.now() - lastLoad > 30000) loadBoard();
+  });
+
   loadBoard();
 </script>
 </body>
