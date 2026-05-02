@@ -38,6 +38,12 @@
   </div>
   <div class="prompt">&gt; <span class="blink">_</span></div>
 </div>
-<script>sessionStorage.setItem('e_s1','1');</script>
+<script>
+  if (!localStorage.getItem('ctf_start')) {
+    localStorage.setItem('ctf_start', Date.now().toString());
+    localStorage.setItem('ctf_path', 'expert');
+  }
+  localStorage.setItem('e_s1','1');
+</script>
 </body>
 </html>

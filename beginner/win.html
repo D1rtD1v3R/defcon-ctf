@@ -325,9 +325,9 @@
 (function() {
   var required = ['b_s1', 'b_s2', 'b_s3', 'b_s4'];
   var hintKey  = 'b_hints';
-  var missing  = required.filter(function(k) { return !sessionStorage.getItem(k); });
+  var missing  = required.filter(function(k) { return !localStorage.getItem(k); });
 
-  var hints = parseInt(sessionStorage.getItem(hintKey) || 0);
+  var hints = parseInt(localStorage.getItem(hintKey) || 0);
   var hintEl = document.getElementById('hint-count');
   if (hintEl) hintEl.textContent = hints;
 
@@ -340,6 +340,7 @@
         + '<p style="font-size:12px;color:#888;line-height:1.9;">Navigating directly to the win page doesn&#39;t count.<br>'
         + '<span style="color:#ff4444;">We know what you did.</span><br><br>'
         + 'Go back and actually solve it.<br>The leaderboard is for people who earned it.</p>'
+        + '<div style="margin-top:14px;font-size:10px;color:#444;letter-spacing:1px;">[ debug: missing ' + missing.join(', ') + ' ]</div>'
         + '<div style="margin-top:14px;border-top:1px solid #1a1a1a;padding-top:14px;">'
         + '<a href="https://d1rtd1v3r.github.io/defcon-ctf/" style="font-size:12px;color:#00aa2a;text-decoration:none;letter-spacing:2px;">← START OVER</a>'
         + '</div></div>';
@@ -350,7 +351,7 @@
 <!-- elapsed-display-init -->
 <script>
   (function() {
-    var ms = parseInt(sessionStorage.getItem('ctf_elapsed') || 0);
+    var ms = parseInt(localStorage.getItem('ctf_elapsed') || 0);
     var el = document.getElementById('elapsed-display');
     if (el) {
       if (!ms || ms <= 0) {
@@ -394,7 +395,7 @@
     btn.textContent = 'SENDING...';
     btn.disabled = true;
 
-    var elapsed = parseInt(sessionStorage.getItem('ctf_elapsed') || 0);
+    var elapsed = parseInt(localStorage.getItem('ctf_elapsed') || 0);
 
     fetch(WORKER_URL, {
       method: 'POST',

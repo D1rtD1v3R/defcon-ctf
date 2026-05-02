@@ -66,6 +66,12 @@
   </div>
   <div class="prompt">&gt; Decode. Navigate.<span class="blink">_</span></div>
 </div>
-<script>sessionStorage.setItem('i_s1','1');</script>
+<script>
+  if (!localStorage.getItem('ctf_start')) {
+    localStorage.setItem('ctf_start', Date.now().toString());
+    localStorage.setItem('ctf_path', 'intermediate');
+  }
+  localStorage.setItem('i_s1','1');
+</script>
 </body>
 </html>

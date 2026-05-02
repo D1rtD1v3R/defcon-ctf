@@ -361,7 +361,7 @@
   var clippyOpen = false;
 
   function clippyToggle() {
-    if (!clippyOpen) { var h = parseInt(sessionStorage.getItem('b_hints')||0)+1; sessionStorage.setItem('b_hints', h); }
+    if (!clippyOpen) { var h = parseInt(localStorage.getItem('b_hints')||0)+1; localStorage.setItem('b_hints', h); }
     if (clippyOpen) { clippyClose(); return; }
     clippyStep = 0;
     clippyOpen = true;
@@ -390,6 +390,6 @@
   }
 </script>
 
-<script>sessionStorage.setItem('b_s3','1');</script>
+<script>localStorage.setItem('b_s3','1');</script>
 </body>
 </html>

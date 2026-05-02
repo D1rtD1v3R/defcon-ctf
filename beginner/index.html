@@ -210,10 +210,15 @@
 </div>
 
 <script>
+  // Fallback: start the timer if user landed here directly (e.g. from QR code)
+  if (!localStorage.getItem('ctf_start')) {
+    localStorage.setItem('ctf_start', Date.now().toString());
+    localStorage.setItem('ctf_path', 'beginner');
+  }
   // Easter egg: check for h4x0r badge param
   const params = new URLSearchParams(window.location.search);
   if (params.get('badge') === 'h4x0r') {
-    sessionStorage.setItem('b_s1','1');
+    localStorage.setItem('b_s1','1');
     window.location.href = 'stage2.html';
   }
 </script>
@@ -270,7 +275,7 @@
   var clippyOpen = false;
 
   function clippyToggle() {
-    if (!clippyOpen) { var h = parseInt(sessionStorage.getItem('b_hints')||0)+1; sessionStorage.setItem('b_hints', h); }
+    if (!clippyOpen) { var h = parseInt(localStorage.getItem('b_hints')||0)+1; localStorage.setItem('b_hints', h); }
     if (clippyOpen) { clippyClose(); return; }
     clippyStep = 0;
     clippyOpen = true;

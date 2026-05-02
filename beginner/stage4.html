@@ -254,9 +254,9 @@
     const result = document.getElementById('result');
     // The hex decodes to: FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}
     if (input === 'FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}') {
-      sessionStorage.setItem('b_s4','1');
-      var _start = parseInt(sessionStorage.getItem('ctf_start') || Date.now());
-      sessionStorage.setItem('ctf_elapsed', Date.now() - _start);
+      localStorage.setItem('b_s4','1');
+      var _start = parseInt(localStorage.getItem('ctf_start') || Date.now());
+      localStorage.setItem('ctf_elapsed', Date.now() - _start);
       window.location.href = 'win.html';
     } else if (input.toLowerCase().startsWith('flag{')) {
       result.textContent = '> Close... but not quite. Check your decode.';
@@ -324,7 +324,7 @@
   var clippyOpen = false;
 
   function clippyToggle() {
-    if (!clippyOpen) { var h = parseInt(sessionStorage.getItem('b_hints')||0)+1; sessionStorage.setItem('b_hints', h); }
+    if (!clippyOpen) { var h = parseInt(localStorage.getItem('b_hints')||0)+1; localStorage.setItem('b_hints', h); }
     if (clippyOpen) { clippyClose(); return; }
     clippyStep = 0;
     clippyOpen = true;
