@@ -1,3 +1,20 @@
+<!--
+  ═══════════════════════════════════════════════════════════════════════
+   BEGINNER PATH — WIN PAGE
+   Final destination after a correct flag submission in stage4.
+
+   Responsibilities:
+     1. Validate that the player actually solved every stage (b_s1..b_s4
+        all present in localStorage). If any are missing, replace the
+        leaderboard form with the "NICE TRY" gate so direct-navigators
+        can't post a fake score.
+     2. Display the player's elapsed time and hint count.
+     3. Provide a leaderboard submission form that POSTs to a Cloudflare
+        Worker (the Worker is what actually has write access to JSONBin;
+        no write key is exposed in client code).
+     4. Run a Matrix-rain animation in the background for atmosphere.
+  ═══════════════════════════════════════════════════════════════════════
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -289,17 +306,27 @@
 </div>
 
 <script>
-  // Matrix rain effect
+  // ─────────────────────────────────────────────────────────────────────
+  //  MATRIX RAIN ANIMATION
+  //  Pure cosmetic effect — green characters falling down a canvas behind
+  //  the win container. The canvas is sized to the viewport, divided into
+  //  16-pixel columns, and each column has a "drop" counter that advances
+  //  one row per frame. When a drop reaches the bottom there's a small
+  //  random chance per frame that it resets to the top, which gives the
+  //  cascading-staggered look. The 0.05 alpha fillRect each frame causes
+  //  older characters to fade rather than sit there forever.
+  // ─────────────────────────────────────────────────────────────────────
   const canvas = document.getElementById('matrix');
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const cols = Math.floor(canvas.width / 16);
-  const drops = Array(cols).fill(1);
+  const cols = Math.floor(canvas.width / 16);   // one column every 16px
+  const drops = Array(cols).fill(1);            // y-position of each column's "head"
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?FLAG{fl0ppy}';
 
   function drawMatrix() {
+    // Fade existing pixels by drawing translucent black over them.
     ctx.fillStyle = 'rgba(0,0,0,0.05)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#00ff41';
@@ -308,13 +335,16 @@
     drops.forEach((y, i) => {
       const char = chars[Math.floor(Math.random() * chars.length)];
       ctx.fillText(char, i * 16, y * 16);
+      // Past bottom + random chance → reset this column to the top, giving
+      // an irregular cadence so all columns aren't synchronized.
       if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
       drops[i]++;
     });
   }
 
-  setInterval(drawMatrix, 50);
+  setInterval(drawMatrix, 50);  // 20fps is plenty for an ambient effect
 
+  // Keep the canvas covering the full viewport on rotation/resize.
   window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -322,15 +352,44 @@
 </script>
 
 <script>
+// ───────────────────────────────────────────────────────────────────────
+//  VALIDATION GATE  ("NICE TRY" check)
+//
+//  Runs immediately on page load. Every beginner stage sets its own
+//  localStorage key as proof of completion:
+//     b_s1 — set by index.html when player flips ?badge=noob to h4x0r
+//     b_s2 — set on stage2.html load
+//     b_s3 — set on stage3.html load
+//     b_s4 — set in stage4.html when the correct flag is submitted
+//
+//  If any of those four are missing when the win page loads, the player
+//  did not actually walk the path — they jumped to win.html directly
+//  (or cleared storage, or navigated through a 404 mid-flow). In that
+//  case we replace the leaderboard form with a "NICE TRY" panel so they
+//  can't post a fake score. The debug line listing the missing keys is
+//  there to help diagnose legitimate flow bugs (kept it minimal so it
+//  isn't shouting at the player).
+//
+//  We also read b_hints (incremented each time Clippy is opened) and
+//  surface it as the "HINTS USED" stat regardless of pass/fail.
+//
+//  IIFE so none of these locals leak into the global scope and clash
+//  with the leaderboard script further down.
+// ───────────────────────────────────────────────────────────────────────
 (function() {
   var required = ['b_s1', 'b_s2', 'b_s3', 'b_s4'];
   var hintKey  = 'b_hints';
   var missing  = required.filter(function(k) { return !localStorage.getItem(k); });
 
+  // Always show the hint count, even if the validation later fails — it's
+  // a useful breadcrumb either way.
   var hints = parseInt(localStorage.getItem(hintKey) || 0);
   var hintEl = document.getElementById('hint-count');
   if (hintEl) hintEl.textContent = hints;
 
+  // Failed validation → swap the leaderboard form for the NICE TRY panel.
+  // Note: this only HIDES submission UI. We don't try to "lock" anything
+  // on the server — the Cloudflare Worker has its own validation.
   if (missing.length > 0) {
     var lbSection = document.getElementById('lb-section');
     if (lbSection) {
@@ -340,6 +399,8 @@
         + '<p style="font-size:12px;color:#888;line-height:1.9;">Navigating directly to the win page doesn&#39;t count.<br>'
         + '<span style="color:#ff4444;">We know what you did.</span><br><br>'
         + 'Go back and actually solve it.<br>The leaderboard is for people who earned it.</p>'
+        // Diagnostic line — tells us which step lost state if a legitimate
+        // player ever lands here. Small + dim so it doesn't read as a taunt.
         + '<div style="margin-top:14px;font-size:10px;color:#444;letter-spacing:1px;">[ debug: missing ' + missing.join(', ') + ' ]</div>'
         + '<div style="margin-top:14px;border-top:1px solid #1a1a1a;padding-top:14px;">'
         + '<a href="https://d1rtd1v3r.github.io/defcon-ctf/" style="font-size:12px;color:#00aa2a;text-decoration:none;letter-spacing:2px;">← START OVER</a>'
@@ -350,6 +411,13 @@
 </script>
 <!-- elapsed-display-init -->
 <script>
+  // ─────────────────────────────────────────────────────────────────────
+  //  ELAPSED-TIME DISPLAY
+  //  ctf_elapsed was written in stage4.html as (Date.now() - ctf_start).
+  //  If it's zero/missing (e.g. the player tampered with storage, or
+  //  ctf_start was never set), we show "N/A" rather than a bogus 0s.
+  //  Otherwise we format as h/m/s with the smallest unit the value fits.
+  // ─────────────────────────────────────────────────────────────────────
   (function() {
     var ms = parseInt(localStorage.getItem('ctf_elapsed') || 0);
     var el = document.getElementById('elapsed-display');
@@ -360,17 +428,31 @@
       } else {
         var s = Math.floor(ms/1000), m = Math.floor(s/60), h = Math.floor(m/60);
         s=s%60; m=m%60;
+        // Drop higher units when they're zero — "47s" reads better than "0h 0m 47s".
         el.textContent = h>0 ? h+'h '+m+'m '+s+'s' : m>0 ? m+'m '+(s<10?'0':'')+s+'s' : s+'s';
       }
     }
   })();
 </script>
 <script>
-  // ── CONFIGURATION ──────────────────────────────────────────────────────
-  // Replace with your Cloudflare Worker URL after deployment
+  // ─────────────────────────────────────────────────────────────────────
+  //  LEADERBOARD SUBMISSION
+  //
+  //  Sends the player's handle + elapsed time to a Cloudflare Worker.
+  //  The Worker is the only thing that has the JSONBin write key — that
+  //  key is NOT in this client code, which is why we POST to the Worker
+  //  rather than to JSONBin directly. (The leaderboard.html page also
+  //  reads from JSONBin directly because reads are public.)
+  //
+  //  LB_PATH identifies which difficulty bucket this submission belongs
+  //  to. Each path has its own win.html with its own LB_PATH value.
+  // ─────────────────────────────────────────────────────────────────────
   var WORKER_URL = 'https://defcon-ctf-leaderboard.flecks55-triumph.workers.dev';
   var LB_PATH    = 'beginner';
 
+  // Same h/m/s formatter as the elapsed-display block — duplicated here
+  // because it gets sent to the Worker as a pre-formatted "time" string
+  // alongside the raw "elapsed" milliseconds (Worker stores both).
   function formatElapsed(ms) {
     if (!ms || ms <= 0) return 'unknown';
     var s=Math.floor(ms/1000), m=Math.floor(s/60), h=Math.floor(m/60);
@@ -385,6 +467,8 @@
     var result = document.getElementById('lb-result');
     var btn    = document.getElementById('lb-btn');
 
+    // Client-side validation — Worker also validates, but failing fast
+    // here saves a round-trip and gives instant feedback.
     if (!handle) { result.textContent = '> Enter a handle first.'; return; }
     if (handle.length > 32) { result.textContent = '> Max 32 characters.'; return; }
     if (!/^[a-zA-Z0-9_\-.]+$/.test(handle)) {
@@ -392,6 +476,7 @@
       return;
     }
 
+    // Disable the button so an antsy double-clicker doesn't fire two POSTs.
     btn.textContent = 'SENDING...';
     btn.disabled = true;
 
@@ -403,22 +488,26 @@
       body: JSON.stringify({
         handle: handle,
         path: LB_PATH,
-        elapsed: elapsed,
-        time: formatElapsed(elapsed)
+        elapsed: elapsed,           // raw ms — used for sorting
+        time: formatElapsed(elapsed) // pre-formatted — convenience for display
       })
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.success) {
+        // New entry accepted.
         result.textContent = '> ' + handle + ' added to the board!';
         result.style.color = 'var(--green)';
         btn.textContent = 'SUBMITTED';
       } else if (data.duplicate) {
+        // Worker rejected because handle already exists on this path.
+        // Re-enable the button so the player can try a different handle.
         result.textContent = '> ' + (data.error || 'Already on the board for this path.');
         result.style.color = 'var(--amber)';
         btn.textContent = 'SUBMIT';
         btn.disabled = false;
       } else {
+        // Some other failure (validation, server error). Allow retry.
         result.textContent = '> ' + (data.error || 'Submission failed. Try again.');
         result.style.color = 'var(--red,#ff4444)';
         btn.textContent = 'SUBMIT';
@@ -426,6 +515,7 @@
       }
     })
     .catch(function() {
+      // Network failure — Worker unreachable, CORS issue, etc. Allow retry.
       result.textContent = '> Connection error. Try again.';
       result.style.color = 'var(--red,#ff4444)';
       btn.textContent = 'SUBMIT';
@@ -433,6 +523,7 @@
     });
   }
 
+  // Submit on Enter while the handle field is focused.
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && document.activeElement.id === 'lb-handle') submitHandle();
   });

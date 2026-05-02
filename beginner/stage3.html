@@ -1,8 +1,22 @@
+<!--
+  ═══════════════════════════════════════════════════════════════════════
+   BEGINNER PATH — STAGE 3
+   Challenge: read the page source, find the next-path meta tag,
+              Base64-decode its content to get the next filename.
+   Encoded value `c3RhZ2U0Lmh0bWw=` decodes to `stage4.html`.
+   The "memory dump" button is a UX device that prints fake hex with
+   the real meta tag highlighted in amber, so players who don't look
+   at View Source can still see the clue in-page.
+   Sets b_s3 on page load.
+   Clippy hint system: see stage4.html for the breakdown.
+  ═══════════════════════════════════════════════════════════════════════
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- The challenge — players Base64-decode the content attribute. -->
 <meta name="next-path" content="c3RhZ2U0Lmh0bWw=">
 <!-- 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -254,6 +268,18 @@
 </div>
 
 <script>
+  // ─────────────────────────────────────────────────────────────────────
+  //  MEMORY-DUMP SIMULATOR
+  //
+  //  Cosmetic fake — there's no actual memory dump. We just paint a wall
+  //  of fabricated hex lines into a scroll box, with the REAL meta tag
+  //  (the challenge's clue) highlighted in amber so it stands out from
+  //  the surrounding "junk." The button lock + delay + "DUMPING..." text
+  //  is theater to make it feel like a tool is running.
+  //
+  //  Why: gives players who don't naturally think to View Source another
+  //  surface where the clue is visible, without giving the answer away.
+  // ─────────────────────────────────────────────────────────────────────
   function runDump() {
     const btn = document.querySelector('.dump-btn');
     btn.textContent = '[ DUMPING... ]';
@@ -390,6 +416,7 @@
   }
 </script>
 
+<!-- Mark stage 3 complete on page load — same pattern as stage2. -->
 <script>localStorage.setItem('b_s3','1');</script>
 </body>
 </html>

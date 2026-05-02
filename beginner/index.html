@@ -1,3 +1,12 @@
+<!--
+  ═══════════════════════════════════════════════════════════════════════
+   BEGINNER PATH — STAGE 1 (LANDING PAGE)
+   Challenge: read the URL bar, change ?badge=noob to ?badge=h4x0r.
+   Entry point: linked from the root index.html with ?badge=noob, OR
+   linked directly from a QR code on a floppy disk.
+   On success: sets b_s1, redirects to stage2.html.
+  ═══════════════════════════════════════════════════════════════════════
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -210,12 +219,27 @@
 </div>
 
 <script>
-  // Fallback: start the timer if user landed here directly (e.g. from QR code)
+  // ─────────────────────────────────────────────────────────────────────
+  //  STAGE 1 LOGIC
+  //
+  //  Two things happen on page load:
+  //
+  //  1) ctf_start fallback. The root index.html's startTimer() seeds
+  //     ctf_start when a player clicks BEGINNER from the landing page.
+  //     But QR codes on the physical disks point directly here, skipping
+  //     the root — so we seed ctf_start ourselves if nothing's there yet.
+  //     The `if (!ctf_start)` guard means we DON'T overwrite an existing
+  //     timer (otherwise hitting refresh would reset the player's clock).
+  //
+  //  2) Badge check. The challenge is to flip ?badge=noob to ?badge=h4x0r
+  //     in the URL bar. When the param is "h4x0r" we mark stage 1 done
+  //     (b_s1) and redirect to stage 2. The redirect is a relative URL
+  //     so it stays on the same origin and localStorage carries through.
+  // ─────────────────────────────────────────────────────────────────────
   if (!localStorage.getItem('ctf_start')) {
     localStorage.setItem('ctf_start', Date.now().toString());
     localStorage.setItem('ctf_path', 'beginner');
   }
-  // Easter egg: check for h4x0r badge param
   const params = new URLSearchParams(window.location.search);
   if (params.get('badge') === 'h4x0r') {
     localStorage.setItem('b_s1','1');

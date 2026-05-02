@@ -1,9 +1,20 @@
+<!--
+  ═══════════════════════════════════════════════════════════════════════
+   BEGINNER PATH — STAGE 2
+   Challenge: ROT13-decode a filename, then navigate to it.
+   Encoded value `fgntr3.ugzy` decodes to `stage3.html`.
+   Sets b_s2 on page load (no input form — solving = navigating).
+   Clippy hint system: same shape as stage4.html — see that file for
+   the full breakdown of the toggle/step/hint-counter logic.
+  ═══════════════════════════════════════════════════════════════════════
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FLOPPY_DISK_001 :: LEVEL 2</title>
+<!-- Source-readable hint: rewards players who pop open View Source. -->
 <!-- HINT: Did you know ROT13 is just Caesar cipher with 13 shifts? Try decoding: fgntr3.ugzy -->
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
@@ -282,6 +293,9 @@
   }
 </script>
 
+<!-- Stage gating: any player who actually loaded this page has
+     "solved" stage 1, so we mark stage 2 complete on page load.
+     Solving stage 2 means navigating to stage3.html (no submit form). -->
 <script>localStorage.setItem('b_s2','1');</script>
 </body>
 </html>
