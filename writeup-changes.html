@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHANGELOG :: ANTI-CHEAT REMOVED</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+  :root {
+    --green:#00ff41;
+    --darkgreen:#00aa2a;
+    --bg:#0a0a0a;
+    --dim:#003310;
+    --amber:#ffb000;
+    --cyan:#00ffff;
+    --red:#ff4444;
+    --gold:#ffd700;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background:var(--bg);
+    color:var(--green);
+    font-family:'Share Tech Mono',monospace;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding:40px 20px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.03) 2px,rgba(0,255,65,0.03) 4px);
+    pointer-events:none; z-index:10;
+  }
+
+  .container { max-width:760px; width:100%; }
+
+  .header {
+    border:1px solid var(--darkgreen);
+    padding:28px 30px;
+    position:relative;
+    box-shadow:0 0 30px rgba(0,255,65,0.1);
+    margin-bottom:24px;
+  }
+  .header::before {
+    content:'[ CHANGELOG :: 2026-06-22 ]';
+    position:absolute; top:-10px; left:20px;
+    background:var(--bg); padding:0 8px;
+    font-size:11px; color:var(--darkgreen);
+  }
+
+  .blink { animation:blink 1s step-end infinite; }
+  @keyframes blink { 50%{opacity:0;} }
+
+  .title {
+    font-family:'VT323',monospace;
+    font-size:clamp(32px,9vw,52px);
+    color:var(--green);
+    text-shadow:0 0 20px var(--green);
+    margin-bottom:6px;
+  }
+  .subtitle {
+    color:var(--darkgreen);
+    font-size:11px;
+    letter-spacing:3px;
+    margin-bottom:18px;
+  }
+  .lede {
+    font-size:13px;
+    color:#aaffaa;
+    line-height:1.9;
+  }
+  .lede strong { color:var(--green); }
+
+  .section {
+    border:1px solid var(--darkgreen);
+    padding:24px 28px;
+    margin-bottom:18px;
+    position:relative;
+  }
+  .section::before {
+    content:attr(data-label);
+    position:absolute; top:-10px; left:20px;
+    background:var(--bg); padding:0 8px;
+    font-size:11px; color:var(--darkgreen);
+  }
+  .section h2 {
+    font-family:'VT323',monospace;
+    font-size:28px;
+    color:var(--amber);
+    margin-bottom:14px;
+    letter-spacing:1px;
+  }
+  .section p, .section li {
+    font-size:13px;
+    color:#aaffaa;
+    line-height:1.9;
+  }
+  .section ul { padding-left:20px; margin:8px 0; }
+  .section code {
+    background:#050505;
+    border:1px solid #1a1a1a;
+    padding:1px 6px;
+    font-size:12px;
+    color:var(--cyan);
+    word-break:break-all;
+  }
+  .section strong { color:var(--green); }
+  .section em { color:var(--amber); font-style:normal; }
+
+  .compare {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-top:14px;
+  }
+  @media (max-width:640px) { .compare { grid-template-columns:1fr; } }
+  .compare .col {
+    background:#050505;
+    border:1px solid #1a1a1a;
+    padding:16px;
+  }
+  .compare .col.before { border-left:3px solid var(--red); }
+  .compare .col.after  { border-left:3px solid var(--green); }
+  .compare .col .col-label {
+    font-size:10px;
+    letter-spacing:3px;
+    margin-bottom:10px;
+  }
+  .compare .col.before .col-label { color:var(--red); }
+  .compare .col.after  .col-label { color:var(--green); }
+  .compare .col p { font-size:12px; color:#888; line-height:1.8; }
+
+  .flow {
+    background:var(--dim);
+    border:1px solid var(--darkgreen);
+    padding:18px;
+    margin-top:14px;
+    font-size:13px;
+    line-height:2;
+    color:#aaffaa;
+  }
+  .flow .step {
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    margin-bottom:6px;
+  }
+  .flow .step-num {
+    background:var(--darkgreen);
+    color:var(--bg);
+    font-size:10px;
+    padding:2px 7px;
+    border-radius:2px;
+    min-width:24px;
+    text-align:center;
+    margin-top:3px;
+    letter-spacing:1px;
+  }
+
+  table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:12px;
+    font-size:12px;
+  }
+  table th, table td {
+    border:1px solid #1a1a1a;
+    padding:8px 10px;
+    text-align:left;
+    vertical-align:top;
+  }
+  table th {
+    background:#050505;
+    color:var(--darkgreen);
+    font-size:10px;
+    letter-spacing:2px;
+  }
+  table td { color:#aaffaa; }
+  td .yes { color:var(--green); }
+  td .no  { color:var(--red); }
+
+  .footer {
+    border-top:1px solid #1a1a1a;
+    padding-top:18px;
+    margin-top:8px;
+    text-align:center;
+    font-size:11px;
+    color:#444;
+  }
+  .footer a {
+    color:var(--darkgreen);
+    text-decoration:none;
+    letter-spacing:2px;
+  }
+  .footer a:hover { color:var(--green); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="title">ANTI-CHEAT REMOVED<span class="blink">_</span></div>
+    <div class="subtitle">// WIN PAGE FLOW :: BEFORE &amp; AFTER //</div>
+    <div class="lede">
+      The DEFCON 2026 CTF originally gated leaderboard submission on a
+      <strong>per-path localStorage stage-key check</strong>. The win page would
+      look for <code>b_s1..b_s4</code> (or <code>i_s1..i_s4</code> / <code>e_s1..e_s5</code>)
+      and refuse to render the submit form if any were missing. That made sense at first
+      glance and broke at second glance — see why below.
+    </div>
+  </div>
+
+  <div class="section" data-label="[ 01 :: WHY IT NEEDED TO GO ]">
+    <h2>THE PROBLEM</h2>
+    <p>
+      Two things were wrong with the original gate, and they compounded each other.
+    </p>
+    <ul>
+      <li>
+        <strong>It didn't actually verify solving.</strong> Of the 13 stage-completion keys
+        across the three paths, only <strong>3 of them</strong> (one per path, on the final
+        stage) were gated behind correct flag input. The other 10 were set automatically
+        on page load. So the gate enforced <em>"did you visit each URL"</em>, not
+        <em>"did you solve each puzzle"</em>. Anyone who knew the URL chain could pass it
+        without solving a thing.
+      </li>
+      <li>
+        <strong>It broke the realistic player journey.</strong> The CTF lives on a physical
+        floppy disk with a QR code. Players scan with a phone. Beginner is phone-friendly,
+        but the intermediate and expert paths need a PC for binary decoding, XOR analysis,
+        DevTools console inspection, etc. Crossing to a PC clears <code>localStorage</code>
+        for the new origin/browser, so the gate would fail even for players who solved
+        every puzzle legitimately.
+      </li>
+    </ul>
+  </div>
+
+  <div class="section" data-label="[ 02 :: THE NEW DESIGN ]">
+    <h2>PASTE-THE-FLAG VERIFICATION</h2>
+    <p>
+      The win page now hides everything sensitive (flag display, stats, time, leaderboard
+      submit form) inside a <code>display:none</code> wrapper. A <em>verify panel</em> is
+      visible by default. The celebration only reveals when the player proves they have
+      the flag.
+    </p>
+    <div class="compare">
+      <div class="col before">
+        <div class="col-label">// BEFORE //</div>
+        <p>
+          Win page renders the flag + stats + leaderboard form unconditionally.
+          A script reads stage keys from <code>localStorage</code>.
+          If any are missing, the submit form is replaced with a "NICE TRY" panel.
+          The flag itself is still visible on the page.
+        </p>
+      </div>
+      <div class="col after">
+        <div class="col-label">// AFTER //</div>
+        <p>
+          Win page renders only the verify panel by default.
+          Celebration content is hidden.
+          The flag value is not visible to anyone who didn't earn it.
+          On valid flag (via URL hash or paste), celebration reveals.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" data-label="[ 03 :: HOW UNLOCKING WORKS ]">
+    <h2>TWO PATHS TO UNLOCK</h2>
+    <p>
+      The verify gate has two equally-valid unlock paths. Same-device players never see
+      the verify panel; cross-device or direct-navigation players use the paste form.
+    </p>
+    <div class="flow">
+      <p style="color:var(--amber);margin-bottom:8px;"><strong>// SAME-DEVICE FLOW //</strong></p>
+      <div class="step"><span class="step-num">1</span><span>Player submits the correct flag on the final stage.</span></div>
+      <div class="step"><span class="step-num">2</span><span>Final stage stores <code>ctf_elapsed</code> and redirects to <code>win.html#FLAG{…}</code> with the flag in the URL hash.</span></div>
+      <div class="step"><span class="step-num">3</span><span>Win page's verify script reads <code>location.hash</code>, decodes it, compares to the hardcoded flag for that path.</span></div>
+      <div class="step"><span class="step-num">4</span><span>On match: celebration reveals. <code>history.replaceState</code> scrubs the hash from the address bar.</span></div>
+    </div>
+    <div class="flow" style="border-color:var(--amber);">
+      <p style="color:var(--amber);margin-bottom:8px;"><strong>// CROSS-DEVICE / DIRECT-NAV FLOW //</strong></p>
+      <div class="step"><span class="step-num">1</span><span>Player arrives at <code>win.html</code> with no hash (different device, cleared storage, or direct URL).</span></div>
+      <div class="step"><span class="step-num">2</span><span>Verify panel is the only thing visible. No flag, no leaderboard, no stats.</span></div>
+      <div class="step"><span class="step-num">3</span><span>Player pastes the captured flag into the input, clicks VERIFY (or hits Enter).</span></div>
+      <div class="step"><span class="step-num">4</span><span>On match: celebration reveals. On mismatch: inline error, celebration stays hidden.</span></div>
+    </div>
+  </div>
+
+  <div class="section" data-label="[ 04 :: PROPERTY COMPARISON ]">
+    <h2>WHO CAN DO WHAT, BEFORE vs AFTER</h2>
+    <table>
+      <thead>
+        <tr><th>Scenario</th><th>Old gate</th><th>New gate</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Same-device, normal solve</td>
+          <td><span class="yes">Works</span></td>
+          <td><span class="yes">Works</span> (URL-hash auto-unlock, identical UX)</td>
+        </tr>
+        <tr>
+          <td>Phone-scan, PC-solve</td>
+          <td><span class="no">Breaks</span> (gate fails on PC)</td>
+          <td><span class="yes">Works</span> (paste the captured flag)</td>
+        </tr>
+        <tr>
+          <td>Cleared storage / incognito after solving</td>
+          <td><span class="no">Breaks</span></td>
+          <td><span class="yes">Works</span></td>
+        </tr>
+        <tr>
+          <td>Direct navigation to <code>win.html</code></td>
+          <td>Blocked (NICE TRY)</td>
+          <td>Blocked (verify panel, no flag visible)</td>
+        </tr>
+        <tr>
+          <td>Player knows the URL chain (e.g., from writeup) but didn't solve</td>
+          <td>Bypassed gate</td>
+          <td>Still needs the flag</td>
+        </tr>
+        <tr>
+          <td>Player knows the flag itself</td>
+          <td>Could already submit (set stage keys + submit)</td>
+          <td>Could already submit (paste flag)</td>
+        </tr>
+        <tr>
+          <td>Random visitor sees the flag value on win.html</td>
+          <td><span class="no">Yes</span> (flag displayed unconditionally)</td>
+          <td><span class="yes">No</span> (celebration hidden until verify)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px;">
+      <strong>The new gate is strictly stronger</strong> on the "did you solve it" axis, and
+      strictly more forgiving on the "did you cross devices" axis. The only thing it gives
+      up is the false certainty of the old design.
+    </p>
+  </div>
+
+  <div class="section" data-label="[ 05 :: WHAT CHANGED IN CODE ]">
+    <h2>FILES TOUCHED</h2>
+    <ul>
+      <li><code>beginner/win.html</code>, <code>intermediate/win.html</code>, <code>expert/win.html</code> — wrapped celebration in a hidden <code>#celebration</code> div; inserted <code>#verify-panel</code>; replaced the missing-keys IIFE with a verify-then-reveal IIFE that handles both URL-hash auto-unlock and manual paste.</li>
+      <li><code>beginner/stage4.html</code>, <code>intermediate/stage4.html</code>, <code>expert/stage5.html</code> — final-stage redirect now appends the flag as a URL hash via <code>encodeURIComponent</code>; the dead <code>localStorage.setItem('*_s*', '1')</code> call was removed.</li>
+      <li>All other stage pages (<code>beginner/stage2.html</code>, <code>stage3.html</code>, etc.) — removed the auto-set <code>localStorage.setItem('*_s*', '1')</code> calls; stale doc-comments updated.</li>
+      <li><code>index.html</code> (root) — <code>startTimer()</code> trimmed to clear only timer + hint keys, since stage-progress keys are no longer written.</li>
+      <li><code>writeup-beginner.html</code>, <code>writeup-intermediate.html</code>, <code>writeup-expert.html</code> — added an "After the flag" section explaining the new win-page flow.</li>
+    </ul>
+  </div>
+
+  <div class="section" data-label="[ 06 :: SECURITY POSTURE ]">
+    <h2>WHAT THIS CHANGED FOR ATTACKERS</h2>
+    <ul>
+      <li><strong>No new exploitable surface</strong> introduced by the change.</li>
+      <li>The leaderboard remains the only piece of shared mutable state, and the
+        <em>worst-case impact</em> of any practical attack still caps at a polluted
+        leaderboard. Per-handle dedup exists; per-IP rate-limiting and a Worker-side
+        minimum-elapsed check are recommended follow-ups.</li>
+      <li>The Cloudflare Worker's CORS policy (<code>https://d1rtd1v3r.github.io</code> only)
+        is still doing its job — confirmed via direct OPTIONS probe.</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <a href="https://d1rtd1v3r.github.io/defcon-ctf/">← BACK TO START</a>
+    &nbsp;&nbsp;·&nbsp;&nbsp;
+    <a href="https://d1rtd1v3r.github.io/defcon-ctf/leaderboard.html">LEADERBOARD</a>
+  </div>
+
+</div>
+</body>
+</html>
