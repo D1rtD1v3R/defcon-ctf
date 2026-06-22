@@ -4,10 +4,10 @@
    Final destination after a correct flag submission in stage4.
 
    Responsibilities:
-     1. Validate that the player actually solved every stage (b_s1..b_s4
-        all present in localStorage). If any are missing, replace the
-        leaderboard form with the "NICE TRY" gate so direct-navigators
-        can't post a fake score.
+     1. Verify the player actually has the flag before revealing the
+        celebration content. Auto-unlocks from the URL hash when arriving
+        from stage4 (window.location.href = 'win.html#FLAG{...}'); falls
+        back to a paste-the-flag input for cross-device or direct arrivals.
      2. Display the player's elapsed time and hint count.
      3. Provide a leaderboard submission form that POSTs to a Cloudflare
         Worker (the Worker is what actually has write access to JSONBin;
@@ -220,6 +220,39 @@
   <div class="title">YOU WIN<span class="blink">!</span></div>
   <div class="subtitle">// HACKER CAPACITY: 100% //</div>
 
+  <!-- ─────────────────────────────────────────────────────────────────────
+       VERIFY PANEL — visible by default, hidden once the flag is verified.
+       This replaces the old localStorage "missing-keys" gate. A direct
+       navigator (or a player who cleared storage / switched devices) lands
+       here with no celebration content visible; they must paste the flag
+       to unlock the rest of the page and the leaderboard submission form.
+       Same-device players coming from stage4.html arrive at win.html with
+       the flag in the URL hash (window.location.href = 'win.html#FLAG{...}'),
+       which auto-unlocks below — they never see this panel.
+       ────────────────────────────────────────────────────────────────── -->
+  <div id="verify-panel" style="border:1px solid var(--darkgreen);padding:20px;margin-bottom:20px;position:relative;">
+    <div style="position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font-size:11px;color:var(--darkgreen);">[ FLAG VERIFICATION ]</div>
+    <p style="font-size:13px;color:#aaffaa;line-height:1.8;margin-bottom:14px;">
+      Paste your captured flag to reveal your results and submit to the leaderboard.<br>
+      <span style="color:var(--darkgreen);font-size:11px;">If you came from the final stage on this device, this should unlock automatically.</span>
+    </p>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input type="text" id="verify-input" placeholder="FLAG{...}" maxlength="64"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        style="flex:1;background:#050505;border:1px solid var(--darkgreen);color:var(--green);font-family:'Share Tech Mono',monospace;font-size:14px;padding:10px 14px;outline:none;">
+      <button id="verify-btn" onclick="verifyFlag()"
+        style="background:var(--dim);border:1px solid var(--green);color:var(--green);font-family:'Share Tech Mono',monospace;font-size:13px;padding:10px 16px;cursor:pointer;transition:all 0.2s;">
+        VERIFY
+      </button>
+    </div>
+    <div id="verify-result" style="font-size:12px;min-height:18px;color:var(--red);"></div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────────
+       CELEBRATION — everything below stays hidden until verifyFlag() (or
+       the URL-hash auto-verify) sets display:block on this wrapper.
+       ────────────────────────────────────────────────────────────────── -->
+  <div id="celebration" style="display:none;">
   <div class="flag-box">
     <div class="label">// CAPTURED FLAG //</div>
     <div class="flag">FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}</div>
@@ -299,6 +332,7 @@
       [ READ THE WRITEUP ]
     </a>
   </div>
+  </div><!-- /#celebration -->
   <div class="footer">
     Made with ❤️ and too much caffeine for DEF CON<br>
     <span>One of 50 floppy disks</span> · Share the challenge, not the flag
@@ -353,59 +387,70 @@
 
 <script>
 // ───────────────────────────────────────────────────────────────────────
-//  VALIDATION GATE  ("NICE TRY" check)
+//  FLAG VERIFICATION GATE
 //
-//  Runs immediately on page load. Every beginner stage sets its own
-//  localStorage key as proof of completion:
-//     b_s1 — set by index.html when player flips ?badge=noob to h4x0r
-//     b_s2 — set on stage2.html load
-//     b_s3 — set on stage3.html load
-//     b_s4 — set in stage4.html when the correct flag is submitted
+//  This replaces the old localStorage-based "missing-keys" gate. That
+//  gate required b_s1..b_s4 to all be present, which broke any player
+//  who scanned the floppy QR on their phone and then moved to a PC to
+//  finish (localStorage doesn't sync across devices).
 //
-//  If any of those four are missing when the win page loads, the player
-//  did not actually walk the path — they jumped to win.html directly
-//  (or cleared storage, or navigated through a 404 mid-flow). In that
-//  case we replace the leaderboard form with a "NICE TRY" panel so they
-//  can't post a fake score. The debug line listing the missing keys is
-//  there to help diagnose legitimate flow bugs (kept it minimal so it
-//  isn't shouting at the player).
+//  New flow:
+//    - Same-device players arrive at win.html#FLAG{...} via the redirect
+//      in stage4.html. The hash is checked here; if it matches the
+//      hardcoded flag, the celebration content is revealed and the hash
+//      is scrubbed from the address bar.
+//    - Cross-device or direct-navigation players see the verify panel,
+//      paste the flag manually, and on a match the celebration unhides.
+//    - A bad / missing flag leaves the celebration hidden, no leaderboard
+//      submission is possible.
 //
-//  We also read b_hints (incremented each time Clippy is opened) and
-//  surface it as the "HINTS USED" stat regardless of pass/fail.
-//
-//  IIFE so none of these locals leak into the global scope and clash
-//  with the leaderboard script further down.
+//  The hint count display still runs unconditionally so the value is
+//  ready in the DOM by the time the celebration reveals.
 // ───────────────────────────────────────────────────────────────────────
-(function() {
-  var required = ['b_s1', 'b_s2', 'b_s3', 'b_s4'];
-  var hintKey  = 'b_hints';
-  var missing  = required.filter(function(k) { return !localStorage.getItem(k); });
+var BEGINNER_FLAG = 'FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}';
 
-  // Always show the hint count, even if the validation later fails — it's
-  // a useful breadcrumb either way.
-  var hints = parseInt(localStorage.getItem(hintKey) || 0);
+function unlockCelebration() {
+  document.getElementById('verify-panel').style.display = 'none';
+  document.getElementById('celebration').style.display = 'block';
+}
+
+function verifyFlag() {
+  var input  = document.getElementById('verify-input').value.trim();
+  var result = document.getElementById('verify-result');
+  if (input === BEGINNER_FLAG) {
+    unlockCelebration();
+  } else {
+    result.textContent = '> Wrong flag. Go back and finish the path.';
+  }
+}
+
+(function() {
+  // Always populate the hint count — hidden DOM is still writable, and
+  // this way the value is correct the instant celebration reveals.
+  var hints = parseInt(localStorage.getItem('b_hints') || 0);
   var hintEl = document.getElementById('hint-count');
   if (hintEl) hintEl.textContent = hints;
 
-  // Failed validation → swap the leaderboard form for the NICE TRY panel.
-  // Note: this only HIDES submission UI. We don't try to "lock" anything
-  // on the server — the Cloudflare Worker has its own validation.
-  if (missing.length > 0) {
-    var lbSection = document.getElementById('lb-section');
-    if (lbSection) {
-      lbSection.innerHTML = '<div style="border:1px solid #ff4444;padding:20px;margin-bottom:20px;position:relative;">'
-        + '<div style="position:absolute;top:-10px;left:16px;background:#0a0a0a;padding:0 8px;font-size:11px;color:#ff4444;">[ HALL OF FAME ]</div>'
-        + '<p style="font-family:VT323,monospace;font-size:22px;color:#ff4444;margin-bottom:12px;">NICE TRY.</p>'
-        + '<p style="font-size:12px;color:#888;line-height:1.9;">Navigating directly to the win page doesn&#39;t count.<br>'
-        + '<span style="color:#ff4444;">We know what you did.</span><br><br>'
-        + 'Go back and actually solve it.<br>The leaderboard is for people who earned it.</p>'
-        // Diagnostic line — tells us which step lost state if a legitimate
-        // player ever lands here. Small + dim so it doesn't read as a taunt.
-        + '<div style="margin-top:14px;font-size:10px;color:#444;letter-spacing:1px;">[ debug: missing ' + missing.join(', ') + ' ]</div>'
-        + '<div style="margin-top:14px;border-top:1px solid #1a1a1a;padding-top:14px;">'
-        + '<a href="https://d1rtd1v3r.github.io/defcon-ctf/" style="font-size:12px;color:#00aa2a;text-decoration:none;letter-spacing:2px;">← START OVER</a>'
-        + '</div></div>';
-    }
+  // Auto-verify from the URL hash, e.g. win.html#FLAG{...}. The hash is
+  // never sent to the Worker (it's a client-only URL fragment) and we
+  // immediately replace it so the flag doesn't linger in the address bar
+  // or get copy-pasted accidentally.
+  if (location.hash && location.hash.length > 1) {
+    try {
+      var fromHash = decodeURIComponent(location.hash.slice(1));
+      if (fromHash === BEGINNER_FLAG) {
+        unlockCelebration();
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+    } catch (e) { /* malformed hash — ignore, player can paste manually */ }
+  }
+
+  // Submit on Enter in the verify input — saves mobile users a tap.
+  var input = document.getElementById('verify-input');
+  if (input) {
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') verifyFlag();
+    });
   }
 })();
 </script>

@@ -2,8 +2,7 @@
   ═══════════════════════════════════════════════════════════════════════
    BEGINNER PATH — STAGE 4 (FINAL STAGE)
    Challenge: hex-decode a string to recover the flag.
-   Prerequisite: arrived from stage3.html (b_s3 already set).
-   On submit: sets b_s4 + ctf_elapsed, redirects to win.html.
+   On submit: stores ctf_elapsed, redirects to win.html#<flag>.
    The flag the player must enter: FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}
   ═══════════════════════════════════════════════════════════════════════
 -->
@@ -265,14 +264,13 @@
   //
   //  Called by the SUBMIT button click and by the Enter-key handler below.
   //  Compares user input against the expected decoded flag. On a match:
-  //    1. Sets b_s4 in localStorage to mark this stage as completed.
-  //       (win.html validates b_s1..b_s4 are all present before showing
-  //       the leaderboard form — see win.html for the gating logic.)
-  //    2. Computes elapsed time since ctf_start (set by the root
+  //    1. Computes elapsed time since ctf_start (set by the root
   //       index.html startTimer or as a fallback in beginner/index.html)
   //       and stores it in ctf_elapsed for the win page to display.
-  //    3. Redirects to win.html (relative URL — stays on same origin so
-  //       localStorage persists into win.html).
+  //    2. Redirects to win.html with the flag in the URL hash so the
+  //       win page can auto-unlock its verify gate. Hashes are client-
+  //       only (never sent to the leaderboard Worker) and the win page
+  //       scrubs the hash from the address bar after reading it.
   //  On a near-miss (starts with 'flag{') we give a softer hint;
   //  otherwise a generic denial message.
   // ─────────────────────────────────────────────────────────────────────
@@ -281,15 +279,12 @@
     const result = document.getElementById('result');
     // The hex decodes to: FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}
     if (input === 'FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}') {
-      // Mark stage 4 complete — last required key for the beginner win check.
-      localStorage.setItem('b_s4','1');
       // Fallback to Date.now() so the math is safe if ctf_start is
       // somehow missing (e.g. a player who manipulated localStorage).
       var _start = parseInt(localStorage.getItem('ctf_start') || Date.now());
       localStorage.setItem('ctf_elapsed', Date.now() - _start);
-      // Relative redirect — keeps the player on the same origin
-      // so localStorage carries over into win.html.
-      window.location.href = 'win.html';
+      // Hash-based handoff. Same-origin redirect, so the timer persists.
+      window.location.href = 'win.html#' + encodeURIComponent(input);
     } else if (input.toLowerCase().startsWith('flag{')) {
       // They got the format right but the contents wrong — nudge them
       // back to the decode step rather than telling them outright.

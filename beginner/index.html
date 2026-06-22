@@ -4,7 +4,7 @@
    Challenge: read the URL bar, change ?badge=noob to ?badge=h4x0r.
    Entry point: linked from the root index.html with ?badge=noob, OR
    linked directly from a QR code on a floppy disk.
-   On success: sets b_s1, redirects to stage2.html.
+   On success: redirects to stage2.html.
   ═══════════════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html>
@@ -232,9 +232,9 @@
   //     timer (otherwise hitting refresh would reset the player's clock).
   //
   //  2) Badge check. The challenge is to flip ?badge=noob to ?badge=h4x0r
-  //     in the URL bar. When the param is "h4x0r" we mark stage 1 done
-  //     (b_s1) and redirect to stage 2. The redirect is a relative URL
-  //     so it stays on the same origin and localStorage carries through.
+  //     in the URL bar. When the param is "h4x0r" we redirect to stage 2.
+  //     The redirect is a relative URL so it stays on the same origin and
+  //     the timer (ctf_start/ctf_elapsed) carries through.
   // ─────────────────────────────────────────────────────────────────────
   if (!localStorage.getItem('ctf_start')) {
     localStorage.setItem('ctf_start', Date.now().toString());
@@ -242,7 +242,6 @@
   }
   const params = new URLSearchParams(window.location.search);
   if (params.get('badge') === 'h4x0r') {
-    localStorage.setItem('b_s1','1');
     window.location.href = 'stage2.html';
   }
 </script>

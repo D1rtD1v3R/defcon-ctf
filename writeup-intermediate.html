@@ -672,6 +672,27 @@
       </div>
     </details>
 
+    <!-- After the flag -->
+    <details>
+      <summary>
+        <span class="summary-icon">+</span>
+        AFTER THE FLAG &nbsp;·&nbsp; WIN PAGE &amp; LEADERBOARD
+        <span class="summary-tag">FLOW</span>
+      </summary>
+      <div class="spoiler-body">
+        Submitting the correct flag on Stage 4 redirected you to <code>win.html#FLAG{...}</code>.
+        The win page reads the flag from the URL hash, auto-unlocks the celebration content
+        (flag display, stats, leaderboard submission form), and scrubs the hash from the
+        address bar so the URL doesn't keep advertising the answer.<br><br>
+        If you switched devices mid-challenge (e.g. scanned the QR on your phone, finished on
+        a PC), or you cleared browser storage, the hash won't be there. In that case the page
+        shows a <strong>VERIFY YOUR FLAG</strong> panel — paste the captured flag and the
+        celebration reveals the same way.<br><br>
+        Random visitors who navigate directly to <code>/intermediate/win.html</code> with no
+        hash and no flag see only the verify panel — no flag value, no leaderboard form.
+      </div>
+    </details>
+
   </div><!-- end walkthrough tab -->
 
   <div class="back-row">

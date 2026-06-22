@@ -283,10 +283,11 @@
 
 <script>
   function startTimer(path) {
+    // Wipe any leftover timer + hint state from a prior run so the new
+    // run starts clean. Stage-progress keys are no longer written, so
+    // they don't need clearing here.
     var keys = ['ctf_start','ctf_path','ctf_elapsed',
-      'b_s1','b_s2','b_s3','b_s4','b_hints',
-      'i_s1','i_s2','i_s3','i_s4','i_hints',
-      'e_s1','e_s2','e_s3','e_s4','e_s5','e_hints'];
+      'b_hints','i_hints','e_hints'];
     keys.forEach(function(k) { localStorage.removeItem(k); });
     localStorage.setItem('ctf_start', Date.now().toString());
     localStorage.setItem('ctf_path', path);

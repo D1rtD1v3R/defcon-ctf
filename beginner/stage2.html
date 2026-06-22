@@ -3,7 +3,7 @@
    BEGINNER PATH — STAGE 2
    Challenge: ROT13-decode a filename, then navigate to it.
    Encoded value `fgntr3.ugzy` decodes to `stage3.html`.
-   Sets b_s2 on page load (no input form — solving = navigating).
+   No input form — solving = navigating to the decoded URL.
    Clippy hint system: same shape as stage4.html — see that file for
    the full breakdown of the toggle/step/hint-counter logic.
   ═══════════════════════════════════════════════════════════════════════
@@ -293,9 +293,5 @@
   }
 </script>
 
-<!-- Stage gating: any player who actually loaded this page has
-     "solved" stage 1, so we mark stage 2 complete on page load.
-     Solving stage 2 means navigating to stage3.html (no submit form). -->
-<script>localStorage.setItem('b_s2','1');</script>
 </body>
 </html>

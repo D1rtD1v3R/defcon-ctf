@@ -41,6 +41,27 @@
   </div>
   <div class="title">NICE WORK<span class="blink">!</span></div>
   <div class="subtitle">// INTERMEDIATE PATH COMPLETE //</div>
+
+  <!-- Verify panel: hidden once the flag is verified (see script at bottom). -->
+  <div id="verify-panel" style="border:1px solid var(--amber);padding:20px;margin-bottom:20px;position:relative;">
+    <div style="position:absolute;top:-10px;left:16px;background:var(--bg);padding:0 8px;font-size:11px;color:var(--amber);">[ FLAG VERIFICATION ]</div>
+    <p style="font-size:13px;color:#aaffaa;line-height:1.8;margin-bottom:14px;">
+      Paste your captured flag to reveal your results and submit to the leaderboard.<br>
+      <span style="color:#856a00;font-size:11px;">If you came from the final stage on this device, this should unlock automatically.</span>
+    </p>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input type="text" id="verify-input" placeholder="FLAG{...}" maxlength="64"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        style="flex:1;background:#050505;border:1px solid var(--amber);color:var(--amber);font-family:'Share Tech Mono',monospace;font-size:14px;padding:10px 14px;outline:none;">
+      <button id="verify-btn" onclick="verifyFlag()"
+        style="background:#150e00;border:1px solid var(--amber);color:var(--amber);font-family:'Share Tech Mono',monospace;font-size:13px;padding:10px 16px;cursor:pointer;transition:all 0.2s;">
+        VERIFY
+      </button>
+    </div>
+    <div id="verify-result" style="font-size:12px;min-height:18px;color:#ff4444;"></div>
+  </div>
+
+  <div id="celebration" style="display:none;">
   <div class="flag-box">
     <div class="label">// CAPTURED FLAG //</div>
     <div class="flag">FLAG{y0u_kn0w_y0ur_w4y_4r0und}</div>
@@ -109,6 +130,7 @@
       [ READ THE WRITEUP ]
     </a>
   </div>
+  </div><!-- /#celebration -->
   <div class="footer">
     <span>One of 50 floppy disks</span> · DEF CON 2026<br>
     Share the challenge, not the flag
@@ -135,29 +157,44 @@
 </script>
 
 <script>
-(function() {
-  var required = ['i_s1', 'i_s2', 'i_s3', 'i_s4'];
-  var hintKey  = 'i_hints';
-  var missing  = required.filter(function(k) { return !localStorage.getItem(k); });
+// FLAG VERIFICATION GATE — see beginner/win.html for the full design notes.
+var INTERMEDIATE_FLAG = 'FLAG{y0u_kn0w_y0ur_w4y_4r0und}';
 
-  var hints = parseInt(localStorage.getItem(hintKey) || 0);
+function unlockCelebration() {
+  document.getElementById('verify-panel').style.display = 'none';
+  document.getElementById('celebration').style.display = 'block';
+}
+
+function verifyFlag() {
+  var input  = document.getElementById('verify-input').value.trim();
+  var result = document.getElementById('verify-result');
+  if (input === INTERMEDIATE_FLAG) {
+    unlockCelebration();
+  } else {
+    result.textContent = '> Wrong flag. Go back and finish the path.';
+  }
+}
+
+(function() {
+  var hints = parseInt(localStorage.getItem('i_hints') || 0);
   var hintEl = document.getElementById('hint-count');
   if (hintEl) hintEl.textContent = hints;
 
-  if (missing.length > 0) {
-    var lbSection = document.getElementById('lb-section');
-    if (lbSection) {
-      lbSection.innerHTML = '<div style="border:1px solid #ff4444;padding:20px;margin-bottom:20px;position:relative;">'
-        + '<div style="position:absolute;top:-10px;left:16px;background:#0a0a0a;padding:0 8px;font-size:11px;color:#ff4444;">[ HALL OF FAME ]</div>'
-        + '<p style="font-family:VT323,monospace;font-size:22px;color:#ff4444;margin-bottom:12px;">NICE TRY.</p>'
-        + '<p style="font-size:12px;color:#888;line-height:1.9;">Navigating directly to the win page doesn&#39;t count.<br>'
-        + '<span style="color:#ff4444;">We know what you did.</span><br><br>'
-        + 'Go back and actually solve it.<br>The leaderboard is for people who earned it.</p>'
-        + '<div style="margin-top:14px;font-size:10px;color:#444;letter-spacing:1px;">[ debug: missing ' + missing.join(', ') + ' ]</div>'
-        + '<div style="margin-top:14px;border-top:1px solid #1a1a1a;padding-top:14px;">'
-        + '<a href="https://d1rtd1v3r.github.io/defcon-ctf/" style="font-size:12px;color:#00aa2a;text-decoration:none;letter-spacing:2px;">← START OVER</a>'
-        + '</div></div>';
-    }
+  if (location.hash && location.hash.length > 1) {
+    try {
+      var fromHash = decodeURIComponent(location.hash.slice(1));
+      if (fromHash === INTERMEDIATE_FLAG) {
+        unlockCelebration();
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+    } catch (e) { /* malformed hash — ignore */ }
+  }
+
+  var input = document.getElementById('verify-input');
+  if (input) {
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') verifyFlag();
+    });
   }
 })();
 </script>
