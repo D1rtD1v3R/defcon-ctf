@@ -176,6 +176,19 @@
   .intermediate .diff-device { color: var(--amber); }
   .expert       .diff-device { color: var(--red); }
 
+  /* Typeable URL for the PC-bound paths — the player is reading this on
+     a phone (QR scan) and needs something short to type at their desk. */
+  .diff-url {
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    color: #555;
+    word-break: break-all;
+  }
+
+  .intermediate .diff-url .url { color: #856a00; }
+  .expert       .diff-url .url { color: #883333; }
+
   .diff-tags {
     margin-top: 8px;
     display: flex;
@@ -263,6 +276,7 @@
       <span class="diff-label">[ INTERMEDIATE ]</span>
       <span class="diff-desc">You know your way around. No hand-holding. Hints cost you.</span>
       <span class="diff-device">💻 PC recommended — you'll need to view page source</span>
+      <span class="diff-url">↳ type on your PC: <span class="url">d1rtd1v3r.github.io/defcon-ctf/intermediate/</span></span>
       <div class="diff-tags">
         <span class="tag">BINARY</span>
         <span class="tag">XOR</span>
@@ -276,6 +290,7 @@
       <span class="diff-label">[ EXPERT ]</span>
       <span class="diff-desc">Nothing is labeled. Nothing is safe. No hints. Good luck.</span>
       <span class="diff-device">💻 PC required — uses the browser developer console</span>
+      <span class="diff-url">↳ type on your PC: <span class="url">d1rtd1v3r.github.io/defcon-ctf/expert/</span></span>
       <div class="diff-tags">
         <span class="tag">STEGO</span>
         <span class="tag">ZERO-WIDTH CHARS</span>
