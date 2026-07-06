@@ -224,21 +224,26 @@
   //
   //  Two things happen on page load:
   //
-  //  1) ctf_start fallback. The root index.html's startTimer() seeds
-  //     ctf_start when a player clicks BEGINNER from the landing page.
-  //     But QR codes on the physical disks point directly here, skipping
-  //     the root — so we seed ctf_start ourselves if nothing's there yet.
-  //     The `if (!ctf_start)` guard means we DON'T overwrite an existing
-  //     timer (otherwise hitting refresh would reset the player's clock).
+  //  1) Timer seeding. The root index.html's startTimer() seeds ctf_start
+  //     when a player clicks BEGINNER from the landing page. But QR codes
+  //     on the physical disks can point directly here, skipping the root —
+  //     so we seed ctf_start ourselves when it's missing. We ALSO re-seed
+  //     when ctf_path holds a different path: that means the player came
+  //     from another path without passing through the landing page, and
+  //     keeping the old start time would inflate this run's clock. A
+  //     mid-run refresh keeps the timer because ctf_path still matches.
+  //     On re-seed we clear the stale ctf_elapsed and hint counter too.
   //
   //  2) Badge check. The challenge is to flip ?badge=noob to ?badge=h4x0r
   //     in the URL bar. When the param is "h4x0r" we redirect to stage 2.
   //     The redirect is a relative URL so it stays on the same origin and
   //     the timer (ctf_start/ctf_elapsed) carries through.
   // ─────────────────────────────────────────────────────────────────────
-  if (!localStorage.getItem('ctf_start')) {
+  if (!localStorage.getItem('ctf_start') || localStorage.getItem('ctf_path') !== 'beginner') {
     localStorage.setItem('ctf_start', Date.now().toString());
     localStorage.setItem('ctf_path', 'beginner');
+    localStorage.removeItem('ctf_elapsed');
+    localStorage.removeItem('b_hints');
   }
   const params = new URLSearchParams(window.location.search);
   if (params.get('badge') === 'h4x0r') {

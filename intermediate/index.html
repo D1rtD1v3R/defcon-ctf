@@ -67,9 +67,15 @@
   <div class="prompt">&gt; Decode. Navigate.<span class="blink">_</span></div>
 </div>
 <script>
-  if (!localStorage.getItem('ctf_start')) {
+  // Seed the timer on direct arrival, and re-seed when the player switched
+  // paths without passing through the landing page (stale ctf_start would
+  // inflate this run's clock). Mid-run refresh keeps the timer because
+  // ctf_path still matches. See beginner/index.html for the full notes.
+  if (!localStorage.getItem('ctf_start') || localStorage.getItem('ctf_path') !== 'intermediate') {
     localStorage.setItem('ctf_start', Date.now().toString());
     localStorage.setItem('ctf_path', 'intermediate');
+    localStorage.removeItem('ctf_elapsed');
+    localStorage.removeItem('i_hints');
   }
 </script>
 </body>

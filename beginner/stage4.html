@@ -1,9 +1,11 @@
 <!--
   ═══════════════════════════════════════════════════════════════════════
    BEGINNER PATH — STAGE 4 (FINAL STAGE)
-   Challenge: hex-decode a string to recover the flag.
-   On submit: stores ctf_elapsed, redirects to win.html#<flag>.
-   The flag the player must enter: FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}
+   Challenge: hex-decode the string shown on the page to recover the
+   flag, then submit it. On submit: stores ctf_elapsed, redirects to
+   win.html#<flag>. (Flag value intentionally not written in comments —
+   they ship to players. The checkFlag() equality string is the single
+   source of truth; keep it in sync with win.html.)
   ═══════════════════════════════════════════════════════════════════════
 -->
 <!DOCTYPE html>
@@ -277,7 +279,6 @@
   function checkFlag() {
     const input = document.getElementById('flagInput').value.trim();
     const result = document.getElementById('result');
-    // The hex decodes to: FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}
     if (input === 'FLAG{fl0ppy_d1sks_4r3_b4ck_b4by}') {
       // Fallback to Date.now() so the math is safe if ctf_start is
       // somehow missing (e.g. a player who manipulated localStorage).

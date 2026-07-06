@@ -39,9 +39,15 @@
   <div class="prompt">&gt; <span class="blink">_</span></div>
 </div>
 <script>
-  if (!localStorage.getItem('ctf_start')) {
+  // Seed the timer on direct arrival, and re-seed when the player switched
+  // paths without passing through the landing page (stale ctf_start would
+  // inflate this run's clock). Mid-run refresh keeps the timer because
+  // ctf_path still matches. See beginner/index.html for the full notes.
+  if (!localStorage.getItem('ctf_start') || localStorage.getItem('ctf_path') !== 'expert') {
     localStorage.setItem('ctf_start', Date.now().toString());
     localStorage.setItem('ctf_path', 'expert');
+    localStorage.removeItem('ctf_elapsed');
+    localStorage.removeItem('e_hints');
   }
 </script>
 </body>
