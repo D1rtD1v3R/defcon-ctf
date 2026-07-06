@@ -165,6 +165,17 @@
     line-height: 1.6;
   }
 
+  .diff-device {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .beginner     .diff-device { color: var(--green); }
+  .intermediate .diff-device { color: var(--amber); }
+  .expert       .diff-device { color: var(--red); }
+
   .diff-tags {
     margin-top: 8px;
     display: flex;
@@ -238,6 +249,7 @@
     <a class="diff-btn beginner" href="https://d1rtd1v3r.github.io/defcon-ctf/beginner/?badge=noob" onclick="startTimer('beginner')">
       <span class="diff-label">[ BEGINNER ]</span>
       <span class="diff-desc">New to CTFs? No problem. Hints available. Phone-friendly puzzles.</span>
+      <span class="diff-device">📱 Phone-friendly</span>
       <div class="diff-tags">
         <span class="tag">URL PARAMS</span>
         <span class="tag">ROT13</span>
@@ -251,6 +263,7 @@
     <a class="diff-btn intermediate" href="https://d1rtd1v3r.github.io/defcon-ctf/intermediate/" onclick="startTimer('intermediate')">
       <span class="diff-label">[ INTERMEDIATE ]</span>
       <span class="diff-desc">You know your way around. No hand-holding. Hints cost you.</span>
+      <span class="diff-device">💻 PC recommended — you'll need to view page source</span>
       <div class="diff-tags">
         <span class="tag">BINARY</span>
         <span class="tag">XOR</span>
@@ -263,6 +276,7 @@
     <a class="diff-btn expert" href="https://d1rtd1v3r.github.io/defcon-ctf/expert/" onclick="startTimer('expert')">
       <span class="diff-label">[ EXPERT ]</span>
       <span class="diff-desc">Nothing is labeled. Nothing is safe. No hints. Good luck.</span>
+      <span class="diff-device">💻 PC required — uses the browser developer console</span>
       <div class="diff-tags">
         <span class="tag">STEGO</span>
         <span class="tag">ZERO-WIDTH CHARS</span>
