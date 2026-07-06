@@ -486,7 +486,7 @@
       <div class="stage-note-body">
         ROT13 is the universal CTF rite of passage. It's trivially breakable, which is the point —
         it's obfuscation, not encryption. The hint was hiding in the HTML comment in the page
-        <code>&lt;head&gt;</code>: <code>&lt;!-- HINT: Did you know ROT13 is just Caesar cipher with 13 shifts? Try decoding: /fgntr3.ugzy --&gt;</code><br><br>
+        <code>&lt;head&gt;</code>: <code>&lt;!-- HINT: Did you know ROT13 is just Caesar cipher with 13 shifts? Try decoding: fgntr3.ugzy --&gt;</code><br><br>
         <strong>The lesson:</strong> Source code comments are not hidden. They are visible to anyone
         who presses Ctrl+U.
       </div>
@@ -501,7 +501,7 @@
         HTML <code>&lt;meta&gt;</code> tags live in the <code>&lt;head&gt;</code> — invisible to
         the rendered page, but fully present in the DOM. Real applications use them for SEO, CSP headers,
         and refresh directives. The <code>next-path</code> attribute was waiting right there in the source:
-        <code>content="L3N0YWdlNC5odG1s"</code>.<br><br>
+        <code>content="c3RhZ2U0Lmh0bWw="</code>.<br><br>
         <strong>The lesson:</strong> Ctrl+U (view source) is the most underused tool in a beginner's kit.
         Base64 is recognizable by its character set and <code>=</code> padding — once you see it, you know it.
       </div>
@@ -544,7 +544,7 @@
       </summary>
       <div class="spoiler-body">
         <strong>What the challenge gave you:</strong><br>
-        A page that loaded with <code>?badge=noob</code> in the URL and told you to look at the address bar.
+        A page that loaded with <code>?badge=noob</code> in the URL, called you a noob, and dared you to prove you're a <code>h4x0r</code>. (Clippy would point you at the address bar if you asked.)
 
         <hr class="divider">
 
@@ -574,28 +574,28 @@
       </summary>
       <div class="spoiler-body">
         <strong>What the challenge gave you:</strong><br>
-        An encoded file path: <code>/fgntr3.ugzy</code>
+        An encoded file path: <code>fgntr3.ugzy</code>
 
         <hr class="divider">
 
         <div class="step">
           <span class="step-num">1.</span>
-          <span class="step-text">The page hints: "Caesar loved this." ROT13 shifts each letter 13 places forward (wrapping around the alphabet). Numbers and symbols stay unchanged.</span>
+          <span class="step-text">Recognize the classic: ROT13 (Clippy hints that Julius Caesar loved this cipher). It shifts each letter 13 places forward, wrapping around the alphabet. Numbers and symbols stay unchanged.</span>
         </div>
         <div class="step">
           <span class="step-num">2.</span>
-          <span class="step-text">Apply ROT13 to <code>/fgntr3.ugzy</code>:<br>
+          <span class="step-text">Apply ROT13 to <code>fgntr3.ugzy</code>:<br>
             f→s, g→t, n→a, t→g, r→e, 3=3, .=., u→h, g→t, m→z, y→l
           </span>
         </div>
         <div class="step">
           <span class="step-num">3.</span>
-          <span class="step-text">Result: <code>/stage3.html</code> — navigate there to continue.</span>
+          <span class="step-text">Result: <code>stage3.html</code> — navigate there to continue.</span>
         </div>
 
         <div class="answer-box">
           <span class="answer-label">// DECODED PATH //</span>
-          /stage3.html
+          stage3.html
         </div>
 
         <div class="tools-row"><span>// TOOLS //</span> rot13.com &nbsp;·&nbsp; CyberChef "ROT13" &nbsp;·&nbsp; Browser console: <code>str.replace(/[a-z]/gi, c => String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26))</code></div>
@@ -622,26 +622,26 @@
         <div class="step">
           <span class="step-num">2.</span>
           <span class="step-text">Near the top of the <code>&lt;head&gt;</code>, find the meta tag:<br>
-            <code>&lt;meta name="next-path" content="L3N0YWdlNC5odG1s"&gt;</code>
+            <code>&lt;meta name="next-path" content="c3RhZ2U0Lmh0bWw="&gt;</code>
           </span>
         </div>
         <div class="step">
           <span class="step-num">3.</span>
-          <span class="step-text">The content value is Base64 encoded. Decode <code>L3N0YWdlNC5odG1s</code>.</span>
+          <span class="step-text">The content value is Base64 encoded. Decode <code>c3RhZ2U0Lmh0bWw=</code>.</span>
         </div>
         <div class="step">
           <span class="step-num">4.</span>
-          <span class="step-text">Result: <code>/stage4.html</code> — navigate there to continue.</span>
+          <span class="step-text">Result: <code>stage4.html</code> — navigate there to continue.</span>
         </div>
 
-        <div class="encoded-block">L3N0YWdlNC5odG1s</div>
+        <div class="encoded-block">c3RhZ2U0Lmh0bWw=</div>
 
         <div class="answer-box">
           <span class="answer-label">// DECODED PATH //</span>
-          /stage4.html
+          stage4.html
         </div>
 
-        <div class="tools-row"><span>// TOOLS //</span> base64decode.org &nbsp;·&nbsp; Browser console: <code>atob("L3N0YWdlNC5odG1s")</code> &nbsp;·&nbsp; CyberChef "From Base64"</div>
+        <div class="tools-row"><span>// TOOLS //</span> base64decode.org &nbsp;·&nbsp; Browser console: <code>atob("c3RhZ2U0Lmh0bWw=")</code> &nbsp;·&nbsp; CyberChef "From Base64"</div>
       </div>
     </details>
 
