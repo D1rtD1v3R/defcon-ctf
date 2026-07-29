@@ -5,7 +5,7 @@
    written here — comments ship to players. See the badge check in the
    script below; Clippy carries the hints.)
    Entry point: linked from the root index.html with ?badge=noob, OR
-   linked directly from a QR code on a floppy disk.
+   linked directly from the NFC tag inside a 3D-printed mini floppy disk.
    On success: redirects to stage2.html.
   ═══════════════════════════════════════════════════════════════════════
 -->
@@ -222,8 +222,8 @@
   //  Two things happen on page load:
   //
   //  1) Timer seeding. The root index.html's startTimer() seeds ctf_start
-  //     when a player clicks BEGINNER from the landing page. But QR codes
-  //     on the physical disks can point directly here, skipping the root —
+  //     when a player clicks BEGINNER from the landing page. But the NFC
+  //     tags in the physical disks can point directly here, skipping the root —
   //     so we seed ctf_start ourselves when it's missing. We ALSO re-seed
   //     when ctf_path holds a different path: that means the player came
   //     from another path without passing through the landing page, and
